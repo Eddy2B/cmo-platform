@@ -1,0 +1,12 @@
+{
+  "name": "cmo-platform",
+  "version": "1.0.0",
+  "description": "CMO-as-a-Service Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

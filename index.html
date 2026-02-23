@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMO Platform — Smartregs</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --s0:#0A0F1E;
+  --s1:#0D1426;
+  --s2:#111B35;
+  --s3:#162040;
+  --s4:#1E2D55;
+  --acc:#00E5A0;
+  --acc2:#0066FF;
+  --acc3:#FF6B35;
+  --acc4:#A78BFA;
+  --warn:#F59E0B;
+  --red:#EF4444;
+  --bg:#F4F6FA;
+  --white:#FFFFFF;
+  --border:#E8ECF4;
+  --text:#0D1426;
+  --text2:#4B5A7A;
+  --text3:#94A3C0;
+  --card:#FFFFFF;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06);
+  --shadow-lg:0 4px 6px rgba(0,0,0,.04),0 20px 48px rgba(0,0,0,.1);
+}
+
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden;}
+
+/* ── LOGIN ── */
+.login{position:fixed;inset:0;z-index:999;background:var(--s0);display:flex;align-items:center;justify-content:center;}
+.login-bg{position:absolute;inset:0;overflow:hidden;}
+.login-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15;}
+.login-orb1{width:600px;height:600px;background:var(--acc);top:-200px;right:-100px;}
+.login-orb2{width:400px;height:400px;background:var(--acc2);bottom:-100px;left:-100px;}
+.login-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:48px 48px;}
+.login-card{position:relative;z-index:1;width:420px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:48px;backdrop-filter:blur(20px);}
+.lc-brand{display:flex;align-items:center;gap:12px;margin-bottom:40px;}
+.lc-logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:20px;}
+.lc-name{font-family:'Crimson Pro',serif;font-size:24px;color:white;letter-spacing:-.3px;}
+.lc-name span{color:var(--acc);}
+.lc-h{font-size:28px;font-weight:700;color:white;margin-bottom:8px;letter-spacing:-.5px;}
+.lc-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:36px;line-height:1.6;}
+.lc-field{margin-bottom:12px;}
+.lc-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.lc-input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:white;padding:13px 16px;font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+.lc-input:focus{border-color:var(--acc);}
+.lc-input::placeholder{color:rgba(255,255,255,.2);}
+.lc-btn{width:100%;padding:14px;background:var(--acc);border:none;border-radius:10px;color:var(--s0);font-family:'Sora',sans-serif;font-weight:700;font-size:14px;cursor:pointer;margin-top:8px;transition:all .2s;letter-spacing:.2px;}
+.lc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,160,.3);}
+.lc-footer{text-align:center;margin-top:24px;font-size:11px;color:rgba(255,255,255,.2);}
+
+/* ── LAYOUT ── */
+.app{display:none;height:100vh;flex-direction:row;}
+.app.on{display:flex;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:240px;min-width:240px;background:var(--s1);display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.05);overflow:hidden;}
+.sb-brand{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.05);}
+.sb-brand-inner{display:flex;align-items:center;gap:10px;}
+.sb-logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.sb-brand-text{flex:1;}
+.sb-name{font-family:'Crimson Pro',serif;font-size:17px;color:white;letter-spacing:-.2px;}
+.sb-name span{color:var(--acc);}
+.sb-client{font-size:10px;color:rgba(255,255,255,.3);font-weight:500;margin-top:1px;}
+
+.sb-section{padding:16px 12px 6px;}
+.sb-section-label{font-size:9px;font-weight:700;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:1.2px;padding:0 8px;margin-bottom:4px;}
+
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:all .15s;margin-bottom:2px;}
+.sb-item:hover{background:rgba(255,255,255,.06);}
+.sb-item.on{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.15);}
+.sb-item-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(255,255,255,.06);flex-shrink:0;transition:all .15s;}
+.sb-item.on .sb-item-icon{background:rgba(0,229,160,.2);}
+.sb-item-label{font-size:12px;font-weight:500;color:rgba(255,255,255,.5);flex:1;}
+.sb-item.on .sb-item-label{color:var(--acc);font-weight:600;}
+.sb-item-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:var(--acc3);color:white;}
+.sb-item-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+.sb-divider{height:1px;background:rgba(255,255,255,.05);margin:8px 12px;}
+
+.sb-profile{padding:14px;margin:8px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid rgba(255,255,255,.06);}
+.sb-profile-inner{display:flex;align-items:center;gap:10px;}
+.sb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--acc2),var(--acc));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0;}
+.sb-pname{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);}
+.sb-prole{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px;}
+.sb-status{display:flex;align-items:center;gap:4px;margin-top:6px;}
+.sb-status-dot{width:6px;height:6px;border-radius:50%;background:var(--acc);}
+.sb-status-text{font-size:10px;color:rgba(255,255,255,.3);}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;background:var(--bg);}
+.main::-webkit-scrollbar{width:4px;}
+.main::-webkit-scrollbar-track{background:transparent;}
+.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;flex-shrink:0;}
+.tb-title{font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.tb-subtitle{font-size:11px;color:var(--text3);font-weight:400;margin-top:1px;}
+.tb-badge{display:flex;align-items:center;gap:5px;padding:5px 12px;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:20px;}
+.tb-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--acc);animation:pulse 2s infinite;}
+.tb-badge-text{font-size:11px;font-weight:600;color:#00B882;}
+.tb-actions{display:flex;gap:8px;}
+.tb-btn{padding:7px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:white;color:var(--text2);font-family:'Sora',sans-serif;transition:all .15s;display:flex;align-items:center;gap:5px;}
+.tb-btn:hover{border-color:var(--acc2);color:var(--acc2);}
+.tb-btn.prim{background:var(--acc2);color:white;border-color:var(--acc2);}
+.tb-btn.prim:hover{background:#0055e0;}
+
+/* ── PAGES ── */
+.page{display:none;padding:24px 28px;flex:1;}
+.page.on{display:block;}
+
+/* ── GRID UTILS ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;}
+.grid-left{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;}
+.grid-right{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:16px;}
+.mb16{margin-bottom:16px;}
+.mb24{margin-bottom:24px;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:all .2s;}
+.card:hover{box-shadow:var(--shadow-lg);border-color:#D8DEEC;}
+.card-sm{padding:16px;}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);}
+.card-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.card-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;}
+.badge-green{background:rgba(0,229,160,.1);color:#00B882;}
+.badge-blue{background:rgba(0,102,255,.1);color:var(--acc2);}
+.badge-orange{background:rgba(255,107,53,.1);color:var(--acc3);}
+.badge-red{background:rgba(239,68,68,.1);color:var(--red);}
+.badge-purple{background:rgba(167,139,250,.1);color:var(--acc4);}
+.badge-amber{background:rgba(245,158,11,.1);color:var(--warn);}
+
+/* ── KPI CARDS ── */
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;transition:all .2s;position:relative;overflow:hidden;}
+.kpi:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);}
+.kpi-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius) var(--radius) 0 0;}
+.kpi-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;}
+.kpi-val{font-family:'Crimson Pro',serif;font-size:32px;font-weight:600;color:var(--text);line-height:1;margin-bottom:6px;}
+.kpi-delta{font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;}
+.kpi-delta.up{color:#00B882;}
+.kpi-delta.down{color:var(--red);}
+.kpi-delta.neutral{color:var(--text3);}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px;}
+
+/* ── SCORE RING ── */
+.score-ring-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0;}
+.score-ring{position:relative;width:100px;height:100px;}
+.score-ring svg{transform:rotate(-90deg);}
+.score-ring-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-ring-num{font-family:'Crimson Pro',serif;font-size:28px;font-weight:600;color:var(--text);line-height:1;}
+.score-ring-lbl{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+
+/* ── TREND LIST ── */
+.trend-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.trend-item:last-child{border-bottom:none;}
+.trend-rank{font-size:11px;font-weight:700;color:var(--text3);width:18px;text-align:center;}
+.trend-info{flex:1;}
+.trend-name{font-size:12px;font-weight:600;color:var(--text);}
+.trend-meta{font-size:10px;color:var(--text3);margin-top:2px;}
+.trend-bar-wrap{width:80px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.trend-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--acc2),var(--acc));}
+.trend-delta{font-size:11px;font-weight:700;min-width:40px;text-align:right;}
+
+/* ── ALERTS ── */
+.alert{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:10px;margin-bottom:8px;}
+.alert:last-child{margin-bottom:0;}
+.alert-urgent{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);}
+.alert-warn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);}
+.alert-info{background:rgba(0,102,255,.06);border:1px solid rgba(0,102,255,.1);}
+.alert-ok{background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.15);}
+.alert-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.alert-content{flex:1;}
+.alert-title{font-size:12px;font-weight:700;margin-bottom:2px;}
+.alert-urgent .alert-title{color:var(--red);}
+.alert-warn .alert-title{color:var(--warn);}
+.alert-info .alert-title{color:var(--acc2);}
+.alert-ok .alert-title{color:#00B882;}
+.alert-desc{font-size:11px;color:var(--text2);line-height:1.5;}
+.alert-time{font-size:10px;color:var(--text3);flex-shrink:0;margin-top:1px;}
+
+/* ── NEWS ── */
+.news-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.news-item:last-child{border-bottom:none;}
+.news-source{font-size:10px;font-weight:700;color:var(--acc2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.news-title{font-size:12px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:4px;}
+.news-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px;}
+.news-meta{display:flex;align-items:center;gap:8px;}
+.news-date{font-size:10px;color:var(--text3);}
+.news-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--border);color:var(--text2);}
+
+/* ── MAP EUROPE ── */
+.map-container{position:relative;background:linear-gradient(135deg,#EEF2FF,#F0F9FF);border-radius:10px;overflow:hidden;height:200px;display:flex;align-items:center;justify-content:center;}
+.map-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+.map-legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2);}
+.map-dot{width:8px;height:8px;border-radius:50%;}
+.country-bubble{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;cursor:pointer;transition:all .2s;}
+.country-bubble:hover{transform:scale(1.15);z-index:10;}
+
+/* ── GENERATOR ── */
+.gen-layout{display:grid;grid-template-columns:320px 1fr;gap:16px;height:calc(100vh - 145px);}
+.gen-sidebar{display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.gen-sidebar::-webkit-scrollbar{width:3px;}
+.gen-sidebar::-webkit-scrollbar-thumb{background:var(--border);}
+.gen-main{display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.gen-main::-webkit-scrollbar{width:3px;}
+.gen-main::-webkit-scrollbar-thumb{background:var(--border);}
+
+.platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+.plat-btn{padding:8px;border-radius:8px;border:1.5px solid var(--border);background:white;cursor:pointer;transition:all .15s;text-align:center;}
+.plat-btn:hover{border-color:var(--acc2);}
+.plat-btn.on{border-color:var(--acc2);background:rgba(0,102,255,.05);}
+.plat-btn-icon{font-size:16px;margin-bottom:3px;}
+.plat-btn-label{font-size:10px;font-weight:600;color:var(--text2);}
+.plat-btn.on .plat-btn-label{color:var(--acc2);}
+
+.section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.chips-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.chip{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--text2);background:var(--bg);transition:all .15s;}
+.chip:hover{border-color:var(--acc2);color:var(--acc2);background:rgba(0,102,255,.04);}
+
+.gen-textarea{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s;margin-bottom:10px;}
+.gen-textarea:focus-within{border-color:var(--acc2);box-shadow:0 0 0 3px rgba(0,102,255,.05);}
+.gen-textarea textarea{width:100%;border:none;outline:none;padding:12px 14px;font-family:'Sora',sans-serif;font-size:13px;color:var(--text);resize:none;line-height:1.6;min-height:90px;background:white;}
+.gen-textarea textarea::placeholder{color:var(--text3);}
+.gen-textarea-foot{padding:7px 12px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;align-items:center;}
+
+.gen-controls{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+.gen-select{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Sora',sans-serif;color:var(--text2);background:white;outline:none;cursor:pointer;}
+.gen-go{padding:9px 20px;border-radius:8px;background:var(--acc2);color:white;border:none;font-family:'Sora',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.gen-go:hover{background:#0055e0;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,102,255,.3);}
+.gen-go:disabled{background:var(--text3);transform:none;box-shadow:none;cursor:not-allowed;}
+
+.loading-bar{display:none;align-items:center;gap:10px;padding:12px 14px;background:rgba(0,102,255,.06);border-radius:8px;border:1px solid rgba(0,102,255,.1);margin-bottom:10px;}
+.loading-bar.on{display:flex;}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(0,102,255,.2);border-top-color:var(--acc2);animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:12px;color:var(--acc2);font-weight:500;}
+
+.out-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.out-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);display:flex;align-items:center;gap:6px;}
+.out-dot{width:6px;height:6px;border-radius:50%;background:#00B882;}
+.out-actions{display:flex;gap:6px;}
+
+/* ACTION BUTTONS */
+.act{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:white;color:var(--text2);font-family:'Sora',sans-serif;transition:all .15s;display:flex;align-items:center;gap:4px;}
+.act:hover{border-color:var(--acc2);color:var(--acc2);}
+.act.prim{background:var(--acc2);color:white;border-color:var(--acc2);}
+.act.prim:hover{background:#0055e0;}
+.act.dark{background:var(--s1);color:white;border-color:var(--s1);}
+.act.dark:hover{background:var(--s2);}
+.act.ok{background:rgba(0,229,160,.1);color:#00B882;border-color:rgba(0,229,160,.3);}
+
+/* CONTENT CARDS */
+.content-card{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px;transition:all .2s;}
+.content-card:last-child{margin-bottom:0;}
+.content-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.07);border-color:#D0D8EA;}
+.cc-head{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);}
+.cc-left{display:flex;align-items:center;gap:8px;}
+.cc-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.cc-lbl{font-size:12px;font-weight:700;}
+.cc-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+.cc-actions{display:flex;gap:5px;}
+.cc-btn{padding:3px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:white;color:var(--text2);font-family:'Sora',sans-serif;transition:all .15s;}
+.cc-btn:hover{border-color:var(--acc2);color:var(--acc2);}
+.cc-btn.copied{background:rgba(0,229,160,.1);color:#00B882;border-color:rgba(0,229,160,.3);}
+.cc-btn.preview-btn{border-color:rgba(0,102,255,.3);color:var(--acc2);}
+.cc-body{padding:16px 18px;font-size:13px;line-height:1.8;color:var(--text);}
+.cc-body p{margin-bottom:9px;}
+.cc-body p:last-child{margin-bottom:0;}
+.cc-body strong{font-weight:700;color:var(--s0);}
+.cc-body em{color:var(--text2);font-style:italic;}
+.cc-body ul{list-style:none;padding:0;}
+.cc-body li{padding:2px 0 2px 16px;position:relative;}
+.cc-body li::before{content:'→';position:absolute;left:0;color:var(--acc2);font-size:10px;font-weight:700;top:5px;}
+.cc-body .hashtags{color:var(--acc2);font-size:11px;margin-top:10px;opacity:.7;}
+.cc-body .em-subj{font-family:'Crimson Pro',serif;font-size:17px;font-weight:400;color:var(--s0);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.cc-body .em-subj-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:3px;}
+.cc-body .plan-wk{background:var(--bg);border-radius:8px;padding:11px 13px;margin-bottom:8px;}
+.cc-body .plan-wk:last-child{margin-bottom:0;}
+.cc-body .plan-wk-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--acc2);margin-bottom:7px;}
+/* colors per platform */
+.cc-li .cc-icon{background:rgba(0,102,255,.1);color:var(--acc2);}
+.cc-li .cc-lbl{color:var(--acc2);}
+.cc-em .cc-icon{background:rgba(0,229,160,.12);color:#00B882;}
+.cc-em .cc-lbl{color:#00B882;}
+.cc-ig .cc-icon{background:rgba(225,48,108,.1);color:#E1306C;}
+.cc-ig .cc-lbl{color:#E1306C;}
+.cc-x .cc-icon{background:#F3F4F6;color:var(--s0);}
+.cc-x .cc-lbl{color:var(--s0);}
+.cc-plan .cc-icon{background:rgba(167,139,250,.1);color:var(--acc4);}
+.cc-plan .cc-lbl{color:var(--acc4);}
+
+/* ── ANALYTICS ── */
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:6px;}
+.score-item{background:var(--bg);border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;}
+.score-name{font-size:11px;font-weight:600;color:var(--text2);}
+.score-bar-wrap{width:60px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px;}
+.score-bar{height:100%;border-radius:2px;}
+.score-val{font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;}
+
+/* ── CALENDAR ── */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal-day-head{font-size:10px;font-weight:700;color:var(--text3);text-align:center;padding:6px 0;text-transform:uppercase;letter-spacing:.5px;}
+.cal-day{min-height:72px;background:white;border:1px solid var(--border);border-radius:8px;padding:6px;cursor:pointer;transition:all .15s;}
+.cal-day:hover{border-color:var(--acc2);}
+.cal-day.today{border-color:var(--acc2);background:rgba(0,102,255,.02);}
+.cal-day.has-content{background:var(--bg);}
+.cal-day-num{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px;}
+.cal-day.today .cal-day-num{color:var(--acc2);font-weight:700;}
+.cal-event{font-size:9px;font-weight:600;padding:2px 5px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ce-li{background:rgba(0,102,255,.1);color:var(--acc2);}
+.ce-em{background:rgba(0,229,160,.12);color:#00B882;}
+.ce-ig{background:rgba(225,48,108,.1);color:#E1306C;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.on{display:flex;}
+.modal{background:white;border-radius:20px;width:520px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.2);animation:mIn .2s ease;}
+@keyframes mIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.modal-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.modal-title{font-size:13px;font-weight:700;}
+.modal-x{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text2);}
+.modal-body{overflow-y:auto;padding:18px;flex:1;}
+
+/* LI preview */
+.li-mock{border:1px solid #E0E0E0;border-radius:12px;overflow:hidden;}
+.li-m-head{padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.li-m-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0077B5,#00A0DC);display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700;flex-shrink:0;}
+.li-m-name{font-size:13px;font-weight:600;}
+.li-m-role{font-size:11px;color:#666;}
+.li-m-body{padding:0 14px 14px;font-size:13px;line-height:1.7;color:#191919;}
+.li-m-body p{margin-bottom:8px;}
+.li-m-body strong{font-weight:700;}
+.li-m-foot{padding:10px 14px;border-top:1px solid #E0E0E0;display:flex;gap:14px;}
+.li-m-act{font-size:12px;color:#666;cursor:pointer;}
+.li-m-act:hover{color:#0077B5;}
+
+/* Email preview */
+.em-mock{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.em-m-head{background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--border);}
+.em-m-row{display:flex;gap:8px;font-size:12px;margin-bottom:4px;}
+.em-m-row:last-child{margin-bottom:0;}
+.em-m-key{color:var(--text3);font-weight:600;width:44px;flex-shrink:0;}
+.em-m-subj{font-family:'Crimson Pro',serif;font-size:18px;padding:14px 16px;border-bottom:1px solid var(--border);}
+.em-m-body{padding:16px;font-size:13px;line-height:1.8;}
+.em-m-body p{margin-bottom:9px;}
+.em-m-body strong{font-weight:700;}
+
+/* IG preview */
+.ig-mock{border:1px solid #DBDBDB;border-radius:12px;overflow:hidden;}
+.ig-m-head{padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #FAFAFA;}
+.ig-m-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;}
+.ig-m-name{font-size:13px;font-weight:700;}
+.ig-m-slide{background:var(--s0);aspect-ratio:1;display:flex;align-items:center;justify-content:center;padding:28px;}
+.ig-m-slide-inner{color:white;text-align:left;}
+.ig-m-slide-num{font-size:10px;opacity:.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.ig-m-slide-body{font-size:14px;line-height:1.7;}
+.ig-m-slide-body strong{color:var(--acc);}
+.ig-m-dots{display:flex;gap:4px;justify-content:center;padding:10px;}
+.ig-m-dot{width:6px;height:6px;border-radius:50%;background:#DBDBDB;}
+.ig-m-dot.on{background:var(--acc2);}
+.ig-m-foot{padding:10px 12px;}
+.ig-m-acts{display:flex;gap:12px;font-size:18px;margin-bottom:6px;}
+.ig-m-cap{font-size:12px;line-height:1.5;}
+.ig-m-cap strong{font-weight:700;}
+.slide-nav-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;}
+.snav-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:white;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s;}
+.snav-btn:hover{border-color:var(--acc2);color:var(--acc2);}
+.snav-btn:disabled{opacity:.4;cursor:not-allowed;}
+.snav-counter{font-size:11px;color:var(--text3);font-weight:600;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--s0);color:white;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:500;z-index:500;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:7px;box-shadow:0 8px 28px rgba(0,0,0,.22);}
+.toast.on{transform:translateY(0);opacity:1;}
+
+/* ── MODE SWITCHER ── */
+.mode-bar{display:flex;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:3px;margin:12px 12px 4px;}
+.mode-btn{flex:1;padding:7px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;color:rgba(255,255,255,.35);transition:all .2s;border:none;background:none;font-family:'Sora',sans-serif;}
+.mode-btn.on{background:rgba(255,255,255,.12);color:white;}
+.mode-btn.cmo.on{background:rgba(0,229,160,.18);color:var(--acc);}
+/* ── CMO VIEW ── */
+.cmo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+.client-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;transition:all .2s;cursor:pointer;}
+.client-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);}
+.client-card.active{border-color:var(--acc);background:rgba(0,229,160,.03);}
+.cl-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.cl-av{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0;}
+.cl-name{font-size:13px;font-weight:700;}
+.cl-sector{font-size:10px;color:var(--text3);margin-top:1px;}
+.cl-score-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.cl-score{font-family:'Instrument Serif',serif;font-size:24px;}
+.cl-score-lbl{font-size:10px;color:var(--text3);}
+.cl-score-bar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.cl-score-fill{height:100%;border-radius:3px;}
+.cl-stats{display:flex;border-top:1px solid var(--border);padding-top:10px;}
+.cl-stat{flex:1;text-align:center;}
+.cl-stat+.cl-stat{border-left:1px solid var(--border);}
+.cl-stat-val{font-size:13px;font-weight:700;}
+.cl-stat-lbl{font-size:9px;color:var(--text3);margin-top:1px;}
+.cl-alert{display:flex;align-items:center;gap:5px;padding:5px 8px;background:rgba(239,68,68,.07);border-radius:5px;margin-top:8px;font-size:10px;font-weight:600;color:var(--red);}
+.news-loading{display:flex;align-items:center;gap:10px;padding:14px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--text2);}
+/* ── PRINT ── */
+@media print{
+  .login,.sidebar,.topbar,.out-actions,.cc-actions,.modal-overlay,.toast{display:none!important;}
+  .app{display:block!important;}
+  .main{overflow:visible;}
+  .page{display:none!important;}
+  .page.on{display:block!important;padding:0;}
+  .gen-layout{display:block;}
+  .gen-sidebar{display:none;}
+  .content-card{break-inside:avoid;border:1px solid #ccc;box-shadow:none;}
+}
+
+@media(max-width:768px){
+  .sidebar{width:56px;min-width:56px;}
+  .sb-item-label,.sb-section-label,.sb-brand-text,.sb-profile{display:none;}
+  .sb-item{justify-content:center;}
+  .sb-item-icon{margin:0;}
+  .grid4,.grid3,.grid2{grid-template-columns:1fr;}
+  .gen-layout{grid-template-columns:1fr;}
+  .gen-sidebar{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="login">
+  <div class="login-bg">
+    <div class="login-orb login-orb1"></div>
+    <div class="login-orb login-orb2"></div>
+    <div class="login-grid"></div>
+  </div>
+  <div class="login-card">
+    <div class="lc-brand">
+      <div class="lc-logo">⚡</div>
+      <div class="lc-name">CMO<span>Platform</span></div>
+    </div>
+    <div class="lc-h">Bon retour 👋</div>
+    <div class="lc-sub">Ton CMO externalisé augmenté par l'IA — accède à ton espace Smartregs</div>
+    <div class="lc-field">
+      <div class="lc-label">Email</div>
+      <input class="lc-input" type="email" value="sarah@smartregs.io" placeholder="email@entreprise.fr">
+    </div>
+    <div class="lc-field">
+      <div class="lc-label">Mot de passe</div>
+      <input class="lc-input" type="password" value="••••••••" placeholder="••••••••">
+    </div>
+    <button class="lc-btn" onclick="doLogin()">Accéder à mon espace →</button>
+    <div class="lc-footer">Chiffrement bout-en-bout · Serveurs EU · RGPD compliant</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-inner">
+        <div class="sb-logo">⚡</div>
+        <div class="sb-brand-text">
+          <div class="sb-name">CMO<span>Platform</span></div>
+          <div class="sb-client">Smartregs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODE SWITCHER -->
+    <div class="mode-bar">
+      <button class="mode-btn on" id="modeClient" onclick="setMode('client')">Client</button>
+      <button class="mode-btn cmo" id="modeCMO" onclick="setMode('cmo')">CMO</button>
+    </div>
+
+    <!-- CLIENT NAV -->
+    <div id="navClient">
+      <div class="sb-section">
+        <div class="sb-section-label">Principal</div>
+        <div class="sb-item on" onclick="goPage('overview',this)">
+          <div class="sb-item-icon">◈</div>
+          <div class="sb-item-label">Vue d'ensemble</div>
+        </div>
+        <div class="sb-item" onclick="goPage('market',this)">
+          <div class="sb-item-icon">📡</div>
+          <div class="sb-item-label">Marché & Veille</div>
+          <div class="sb-item-dot"></div>
+        </div>
+        <div class="sb-item" onclick="goPage('generator',this)">
+          <div class="sb-item-icon">✦</div>
+          <div class="sb-item-label">Générateur</div>
+        </div>
+        <div class="sb-item" onclick="goPage('analytics',this)">
+          <div class="sb-item-icon">📊</div>
+          <div class="sb-item-label">Analytics</div>
+        </div>
+        <div class="sb-item" onclick="goPage('calendar',this)">
+          <div class="sb-item-icon">📅</div>
+          <div class="sb-item-label">Calendrier</div>
+          <div class="sb-item-badge">8</div>
+        </div>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-section">
+        <div class="sb-section-label">Config</div>
+        <div class="sb-item" onclick="goPage('brief',this)">
+          <div class="sb-item-icon">📋</div>
+          <div class="sb-item-label">Mon brief</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CMO NAV -->
+    <div id="navCMO" style="display:none">
+      <div class="sb-section">
+        <div class="sb-section-label">Gestion</div>
+        <div class="sb-item on" onclick="goPage('cmo-dashboard',this)">
+          <div class="sb-item-icon">🏢</div>
+          <div class="sb-item-label">Tous les clients</div>
+        </div>
+        <div class="sb-item" onclick="goPage('cmo-tasks',this)">
+          <div class="sb-item-icon">✅</div>
+          <div class="sb-item-label">Tâches en cours</div>
+          <div class="sb-item-badge">4</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+
+    <div class="sb-profile">
+      <div class="sb-profile-inner">
+        <div class="sb-av">SM</div>
+        <div>
+          <div class="sb-pname">Sarah M.</div>
+          <div class="sb-prole">CEO · Smartregs</div>
+        </div>
+      </div>
+      <div class="sb-status">
+        <div class="sb-status-dot"></div>
+        <div class="sb-status-text">Formule Growth · Actif</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR (dynamic) -->
+    <div class="topbar" id="topbar">
+      <div>
+        <div class="tb-title" id="tb-title">Vue d'ensemble</div>
+        <div class="tb-subtitle" id="tb-sub">Février 2026 · Semaine 8</div>
+      </div>
+      <div class="tb-badge">
+        <div class="tb-badge-dot"></div>
+        <div class="tb-badge-text">IA Active</div>
+      </div>
+      <div style="flex:1"></div>
+      <div class="tb-actions" id="tb-actions">
+        <button class="tb-btn" onclick="exportPDF()">⬇ Export PDF</button>
+        <button class="tb-btn prim" onclick="goPage('generator', document.querySelector('[onclick*=generator]'))">✦ Générer du contenu</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         PAGE: OVERVIEW
+    ══════════════════════════════════════════════ -->
+    <div class="page on" id="p-overview">
+      <div class="grid4">
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,var(--acc2),var(--acc))"></div>
+          <div class="kpi-label">Score marketing</div>
+          <div class="kpi-val">72<span style="font-size:16px;color:var(--text3)">/100</span></div>
+          <div class="kpi-delta up">↑ +8 pts ce mois</div>
+          <div class="kpi-sub">Basé sur 6 indicateurs</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,var(--acc),#00C9A7)"></div>
+          <div class="kpi-label">Leads générés</div>
+          <div class="kpi-val">14</div>
+          <div class="kpi-delta up">↑ +4 vs objectif (10)</div>
+          <div class="kpi-sub">LinkedIn + Inbound</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,var(--acc3),#FFB347)"></div>
+          <div class="kpi-label">Contenus publiés</div>
+          <div class="kpi-val">23</div>
+          <div class="kpi-delta neutral">→ Ce mois</div>
+          <div class="kpi-sub">8 LI · 6 Email · 9 Autre</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,var(--acc4),#C084FC)"></div>
+          <div class="kpi-label">Temps économisé</div>
+          <div class="kpi-val">31h</div>
+          <div class="kpi-delta up">↑ +6h vs mois dernier</div>
+          <div class="kpi-sub">vs CMO classique</div>
+        </div>
+      </div>
+
+      <div class="grid-left">
+        <!-- Activité mensuelle -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Activité marketing — 6 derniers mois</div>
+              <div class="card-sub">Contenus générés + leads</div>
+            </div>
+            <span class="card-badge badge-blue">Mensuel</span>
+          </div>
+          <canvas id="activityChart" height="120"></canvas>
+        </div>
+
+        <!-- Score santé -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Santé marketing</div>
+              <div class="card-sub">Score global Smartregs</div>
+            </div>
+          </div>
+          <div class="score-ring-wrap">
+            <div class="score-ring">
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#EEF2FF" stroke-width="10"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="url(#sg)" stroke-width="10" stroke-dasharray="251.2" stroke-dashoffset="68" stroke-linecap="round"/>
+                <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0066FF"/><stop offset="100%" stop-color="#00E5A0"/></linearGradient></defs>
+              </svg>
+              <div class="score-ring-val">
+                <div class="score-ring-num">72</div>
+                <div class="score-ring-lbl">/ 100</div>
+              </div>
+            </div>
+          </div>
+          <div class="score-grid">
+            <div class="score-item"><div><div class="score-name">Visibilité</div><div class="score-bar-wrap"><div class="score-bar" style="width:80%;background:#0066FF"></div></div></div><div class="score-val" style="color:#0066FF">80</div></div>
+            <div class="score-item"><div><div class="score-name">Contenu</div><div class="score-bar-wrap"><div class="score-bar" style="width:75%;background:#00E5A0"></div></div></div><div class="score-val" style="color:#00B882">75</div></div>
+            <div class="score-item"><div><div class="score-name">Leads</div><div class="score-bar-wrap"><div class="score-bar" style="width:65%;background:#F59E0B"></div></div></div><div class="score-val" style="color:#D97706">65</div></div>
+            <div class="score-item"><div><div class="score-name">LinkedIn</div><div class="score-bar-wrap"><div class="score-bar" style="width:82%;background:#0066FF"></div></div></div><div class="score-val" style="color:#0066FF">82</div></div>
+            <div class="score-item"><div><div class="score-name">Email</div><div class="score-bar-wrap"><div class="score-bar" style="width:58%;background:#A78BFA"></div></div></div><div class="score-val" style="color:#7C3AED">58</div></div>
+            <div class="score-item"><div><div class="score-name">SEO</div><div class="score-bar-wrap"><div class="score-bar" style="width:45%;background:#EF4444"></div></div></div><div class="score-val" style="color:#EF4444">45</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <!-- Alertes -->
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Alertes & Recommandations</div><div class="card-sub">Priorités de la semaine</div></div>
+            <span class="card-badge badge-red">3 urgentes</span>
+          </div>
+          <div class="alert alert-urgent">
+            <div class="alert-icon">🚨</div>
+            <div class="alert-content">
+              <div class="alert-title">Contrôles GPSR en hausse — Allemagne</div>
+              <div class="alert-desc">La DIHK signale +340% de contrôles Amazon.de ce mois. Opportunité de contenu urgent sur le risque concret.</div>
+            </div>
+            <div class="alert-time">Aujourd'hui</div>
+          </div>
+          <div class="alert alert-warn">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <div class="alert-title">Taux d'ouverture email en baisse</div>
+              <div class="alert-desc">Séquence J+7 : 18% vs 28% attendu. Recommandation : A/B test sur l'objet.</div>
+            </div>
+            <div class="alert-time">Hier</div>
+          </div>
+          <div class="alert alert-info">
+            <div class="alert-icon">💡</div>
+            <div class="alert-content">
+              <div class="alert-title">Fenêtre de publication LinkedIn optimale</div>
+              <div class="alert-desc">Mardi 8h-10h = +47% d'engagement pour votre secteur cette semaine.</div>
+            </div>
+            <div class="alert-time">Semaine</div>
+          </div>
+          <div class="alert alert-ok">
+            <div class="alert-icon">✅</div>
+            <div class="alert-content">
+              <div class="alert-title">Objectif leads dépassé</div>
+              <div class="alert-desc">14 leads qualifiés vs objectif 10. Recommandation : augmenter budget LinkedIn Ads à 500€.</div>
+            </div>
+            <div class="alert-time">Ce mois</div>
+          </div>
+        </div>
+
+        <!-- Prochain comité -->
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Prochaines actions</div><div class="card-sub">Plan J-8 → comité mensuel</div></div>
+            <span class="card-badge badge-amber">15 mars</span>
+          </div>
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600">
+              <span>Préparation comité</span><span>62%</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+              <div style="width:62%;height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:3px"></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px">
+              <div style="width:18px;height:18px;border-radius:50%;background:rgba(0,229,160,.15);border:1.5px solid #00B882;display:flex;align-items:center;justify-content:center;font-size:9px;color:#00B882;flex-shrink:0">✓</div>
+              <div style="font-size:12px;font-weight:500;color:var(--text);text-decoration:line-through;opacity:.5">3 posts LinkedIn GPSR publiés</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px">
+              <div style="width:18px;height:18px;border-radius:50%;background:rgba(0,229,160,.15);border:1.5px solid #00B882;display:flex;align-items:center;justify-content:center;font-size:9px;color:#00B882;flex-shrink:0">✓</div>
+              <div style="font-size:12px;font-weight:500;color:var(--text);text-decoration:line-through;opacity:.5">Séquence email 4 mails live</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px;border:1px solid rgba(0,102,255,.15)">
+              <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0"></div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">Rapport mensuel à générer</div>
+              <button class="act prim" style="margin-left:auto;font-size:10px;padding:3px 8px" onclick="goPage('generator',document.querySelector('[onclick*=generator]'))">Générer</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px">
+              <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0"></div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">A/B test objet email J+7</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px">
+              <div style="width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0"></div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">Lancer campagne LinkedIn Ads</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         PAGE: MARCHÉ & VEILLE
+    ══════════════════════════════════════════════ -->
+    <div class="page" id="p-market">
+      <div class="grid4" style="margin-bottom:16px">
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,var(--red),#FF6B6B)"></div>
+          <div class="kpi-label">Risque marché</div>
+          <div class="kpi-val" style="color:var(--red)">Élevé</div>
+          <div class="kpi-delta down">Contrôles +340% UE</div>
+          <div class="kpi-sub">Source: Amazon, DIHK</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,var(--acc2),#4DA6FF)"></div>
+          <div class="kpi-label">Recherches GPSR/sem</div>
+          <div class="kpi-val">28K</div>
+          <div class="kpi-delta up">↑ +62% vs jan</div>
+          <div class="kpi-sub">Google Trends EU</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,var(--warn),#FFD23F)"></div>
+          <div class="kpi-label">Vendeurs Amazon impactés</div>
+          <div class="kpi-val">340K</div>
+          <div class="kpi-delta neutral">Europe (FR+DE+IT+ES)</div>
+          <div class="kpi-sub">Estimation Amazon</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,var(--acc),#00C9A7)"></div>
+          <div class="kpi-label">Amende max GPSR</div>
+          <div class="kpi-val">4%</div>
+          <div class="kpi-delta down">Du CA mondial</div>
+          <div class="kpi-sub">Règlement UE 2023/988</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <!-- Tendances recherche -->
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Volume de recherche "GPSR"</div><div class="card-sub">Tendance 12 mois — Europe</div></div>
+            <span class="card-badge badge-red">+62%</span>
+          </div>
+          <canvas id="trendChart" height="130"></canvas>
+        </div>
+
+        <!-- Carte Europe -->
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Activité réglementaire par pays</div><div class="card-sub">Niveau de contrôle GPSR</div></div>
+          </div>
+          <div class="map-container">
+            <!-- Simplified SVG Europe map with bubbles -->
+            <svg viewBox="0 0 400 280" style="width:100%;height:100%;position:absolute;" xmlns="http://www.w3.org/2000/svg">
+              <!-- Simplified country shapes -->
+              <path d="M180,60 L210,55 L225,70 L220,95 L200,100 L180,90 Z" fill="#DBEAFE" stroke="white" stroke-width="1.5" opacity=".8"/><!-- DE -->
+              <path d="M140,85 L175,80 L180,90 L175,110 L155,115 L135,105 Z" fill="#FEE2E2" stroke="white" stroke-width="1.5" opacity=".8"/><!-- FR -->
+              <path d="M195,100 L215,100 L220,130 L200,145 L185,130 L188,110 Z" fill="#FEF3C7" stroke="white" stroke-width="1.5" opacity=".8"/><!-- IT -->
+              <path d="M115,90 L138,85 L140,100 L125,108 L110,100 Z" fill="#DCFCE7" stroke="white" stroke-width="1.5" opacity=".8"/><!-- ES -->
+              <path d="M175,40 L200,38 L205,55 L185,58 L170,50 Z" fill="#EDE9FE" stroke="white" stroke-width="1.5" opacity=".8"/><!-- PL -->
+              <path d="M210,38 L235,35 L240,50 L220,55 L205,48 Z" fill="#DBEAFE" stroke="white" stroke-width="1.5" opacity=".8"/><!-- CZ/AT -->
+              <!-- Bubbles with data -->
+              <circle cx="200" cy="78" r="16" fill="#EF4444" opacity=".85"/>
+              <text x="200" y="82" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="Sora,sans-serif">DE</text>
+              <circle cx="158" cy="98" r="14" fill="#F59E0B" opacity=".85"/>
+              <text x="158" y="102" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="Sora,sans-serif">FR</text>
+              <circle cx="203" cy="122" r="12" fill="#F59E0B" opacity=".85"/>
+              <text x="203" y="126" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="Sora,sans-serif">IT</text>
+              <circle cx="125" cy="96" r="11" fill="#00A878" opacity=".85"/>
+              <text x="125" y="100" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="Sora,sans-serif">ES</text>
+              <circle cx="188" cy="48" r="10" fill="#0066FF" opacity=".85"/>
+              <text x="188" y="52" text-anchor="middle" fill="white" font-size="8" font-weight="700" font-family="Sora,sans-serif">PL</text>
+            </svg>
+          </div>
+          <div class="map-legend">
+            <div class="map-legend-item"><div class="map-dot" style="background:#EF4444"></div>Très élevé (DE)</div>
+            <div class="map-legend-item"><div class="map-dot" style="background:#F59E0B"></div>Élevé (FR, IT)</div>
+            <div class="map-legend-item"><div class="map-dot" style="background:#00A878"></div>Modéré (ES)</div>
+            <div class="map-legend-item"><div class="map-dot" style="background:#0066FF"></div>En hausse (PL)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <!-- Top tendances -->
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Top tendances secteur</div><div class="card-sub">LinkedIn + Google cette semaine</div></div>
+            <span class="card-badge badge-green">Live</span>
+          </div>
+          <div class="trend-item">
+            <div class="trend-rank">#1</div>
+            <div class="trend-info"><div class="trend-name">GPSR compliance Amazon</div><div class="trend-meta">+340% · E-commerce · EU</div></div>
+            <div class="trend-bar-wrap"><div class="trend-bar" style="width:100%"></div></div>
+            <div class="trend-delta" style="color:#EF4444">🔥 +340%</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-rank">#2</div>
+            <div class="trend-info"><div class="trend-name">Amazon seller conformité</div><div class="trend-meta">+180% · Marketplace · EU</div></div>
+            <div class="trend-bar-wrap"><div class="trend-bar" style="width:78%"></div></div>
+            <div class="trend-delta" style="color:#F59E0B">↑ +180%</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-rank">#3</div>
+            <div class="trend-info"><div class="trend-name">Mandataire européen produit</div><div class="trend-meta">+95% · Réglementaire · EU</div></div>
+            <div class="trend-bar-wrap"><div class="trend-bar" style="width:55%"></div></div>
+            <div class="trend-delta" style="color:#F59E0B">↑ +95%</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-rank">#4</div>
+            <div class="trend-info"><div class="trend-name">REACH EN71 certification</div><div class="trend-meta">+62% · Jouets · DE+FR</div></div>
+            <div class="trend-bar-wrap"><div class="trend-bar" style="width:42%"></div></div>
+            <div class="trend-delta" style="color:#00B882">↑ +62%</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-rank">#5</div>
+            <div class="trend-info"><div class="trend-name">Suspension compte Amazon</div><div class="trend-meta">+48% · Forums vendeurs</div></div>
+            <div class="trend-bar-wrap"><div class="trend-bar" style="width:32%"></div></div>
+            <div class="trend-delta" style="color:#00B882">↑ +48%</div>
+          </div>
+        </div>
+
+        <!-- Actualités -->
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Actualités réglementaires</div><div class="card-sub">Veille GPSR · IA + sources officielles</div></div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <span class="card-badge badge-red" id="newsCount">3 nouvelles</span>
+              <button class="tb-btn" onclick="loadLiveNews()" id="newsBtn" style="font-size:10px;padding:4px 10px">↻ Live</button>
+            </div>
+          </div>
+          <div id="newsContainer">
+          <div class="news-item">
+            <div class="news-source">Commission Européenne</div>
+            <div class="news-title">La CE annonce un renforcement des contrôles GPSR sur les marketplaces au T1 2026</div>
+            <div class="news-desc">Les plateformes Amazon, Temu et AliExpress dans le viseur des autorités douanières. Premières amendes attendues dès mars.</div>
+            <div class="news-meta"><div class="news-date">21 fév 2026</div><div class="news-tag">Urgent</div><div class="news-tag">EU</div></div>
+          </div>
+          <div class="news-item">
+            <div class="news-source">DIHK Allemagne</div>
+            <div class="news-title">340% d'augmentation des vérifications Amazon.de — janvier 2026</div>
+            <div class="news-desc">L'association des chambres de commerce allemandes documente une explosion des contrôles. Les vendeurs français sur Amazon.de sont particulièrement exposés.</div>
+            <div class="news-meta"><div class="news-date">19 fév 2026</div><div class="news-tag">DE</div><div class="news-tag">Amazon</div></div>
+          </div>
+          <div class="news-item">
+            <div class="news-source">Ecommerce Nation</div>
+            <div class="news-title">GPSR : 78% des PME françaises pas encore conformes selon une étude FEVAD</div>
+            <div class="news-desc">L'étude révèle que la majorité des PME e-commerce n'ont pas encore mis en place de processus de conformité. Opportunité commerciale directe.</div>
+            <div class="news-meta"><div class="news-date">18 fév 2026</div><div class="news-tag">FR</div><div class="news-tag">PME</div></div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Concurrents -->
+      <div class="card mb16">
+        <div class="card-head">
+          <div><div class="card-title">Veille concurrentielle</div><div class="card-sub">Positionnement Smartregs vs marché</div></div>
+          <span class="card-badge badge-green">Avantage compétitif fort</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+          <div style="background:linear-gradient(135deg,rgba(0,229,160,.08),rgba(0,102,255,.06));border:2px solid rgba(0,229,160,.25);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:12px;font-weight:800;color:#00B882;margin-bottom:8px">Smartregs ⚡</div>
+            <div style="font-size:22px;font-weight:700;font-family:'Crimson Pro',serif;color:var(--s0);margin-bottom:4px">79€</div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:6px">par produit</div>
+            <div style="font-size:11px;color:#00B882;font-weight:600">48h ✓</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px">Auto · PME · IA</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">Consultant freelance</div>
+            <div style="font-size:22px;font-weight:700;font-family:'Crimson Pro',serif;color:var(--text);margin-bottom:4px">350€</div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:6px">par produit</div>
+            <div style="font-size:11px;color:var(--red);font-weight:600">2-3 sem ✗</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px">Manuel · Variable</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">ComplianceHub</div>
+            <div style="font-size:22px;font-weight:700;font-family:'Crimson Pro',serif;color:var(--text);margin-bottom:4px">800€</div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:6px">/mois</div>
+            <div style="font-size:11px;color:var(--warn);font-weight:600">2-4 sem ✗</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px">SaaS lourd · Grandes co.</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">Cabinet (KPMG)</div>
+            <div style="font-size:22px;font-weight:700;font-family:'Crimson Pro',serif;color:var(--text);margin-bottom:4px">2K€</div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:6px">par produit</div>
+            <div style="font-size:11px;color:var(--red);font-weight:600">4-8 sem ✗</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px">Premium · CAC40</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         PAGE: GENERATOR
+    ══════════════════════════════════════════════ -->
+    <div class="page" id="p-generator">
+      <div class="gen-layout">
+
+        <!-- LEFT: Config -->
+        <div class="gen-sidebar">
+          <div class="card card-sm">
+            <div class="card-head" style="margin-bottom:12px">
+              <div><div class="card-title">Plateforme</div></div>
+            </div>
+            <div class="platform-grid" id="platGrid">
+              <div class="plat-btn on" onclick="setPlatform(this,'LinkedIn')"><div class="plat-btn-icon">𝓛</div><div class="plat-btn-label">LinkedIn</div></div>
+              <div class="plat-btn" onclick="setPlatform(this,'Email')"><div class="plat-btn-icon">✉</div><div class="plat-btn-label">Email</div></div>
+              <div class="plat-btn" onclick="setPlatform(this,'Instagram')"><div class="plat-btn-icon">◎</div><div class="plat-btn-label">Instagram</div></div>
+              <div class="plat-btn" onclick="setPlatform(this,'X')"><div class="plat-btn-icon">✕</div><div class="plat-btn-label">X / Twitter</div></div>
+              <div class="plat-btn" onclick="setPlatform(this,'Plan')"><div class="plat-btn-icon">◈</div><div class="plat-btn-label">Plan mensuel</div></div>
+              <div class="plat-btn" onclick="setPlatform(this,'Rapport')"><div class="plat-btn-icon">📄</div><div class="plat-btn-label">Rapport</div></div>
+            </div>
+          </div>
+
+          <div class="card card-sm">
+            <div class="section-label">Suggestions rapides</div>
+            <div class="chips-row" id="chipRow">
+              <div class="chip" onclick="useChip(this)">Risque GPSR Amazon</div>
+              <div class="chip" onclick="useChip(this)">ROI vs consultant</div>
+              <div class="chip" onclick="useChip(this)">Analogie RGPD 2018</div>
+              <div class="chip" onclick="useChip(this)">3 erreurs conformité</div>
+              <div class="chip" onclick="useChip(this)">Stat choc semaine</div>
+              <div class="chip" onclick="useChip(this)">Témoignage client</div>
+            </div>
+            <div class="section-label">Ton</div>
+            <select class="gen-select" style="width:100%;margin-bottom:0" id="toneSelect">
+              <option>Direct & pragmatique (Smartregs)</option>
+              <option>Urgence & conversion</option>
+              <option>Éducatif & pédagogue</option>
+              <option>Storytelling fondateur</option>
+              <option>Thought leadership</option>
+            </select>
+          </div>
+
+          <!-- Brief résumé -->
+          <div class="card card-sm" style="background:linear-gradient(135deg,rgba(0,102,255,.04),rgba(0,229,160,.03));border-color:rgba(0,102,255,.1)">
+            <div class="section-label">Brief actif</div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.7">
+              <strong style="color:var(--text)">Smartregs</strong> — SaaS conformité GPSR<br>
+              🎯 CEO/Dir. e-commerce, PME Amazon 50-200 SKUs<br>
+              💶 79€/produit, 48h, vs 500€ consultant<br>
+              ⚠️ Jamais "garantit conformité" → "pré-diagnostic"
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Editor + Output -->
+        <div class="gen-main">
+          <div class="card card-sm" style="flex-shrink:0">
+            <div class="gen-textarea">
+              <textarea id="prompt" placeholder="Ex: Génère 3 posts LinkedIn sur le risque de blocage compte Amazon pour non-conformité GPSR. Utilise l'analogie RGPD 2018. Chiffres clés : 79€, 48h, 4% CA mondial, 5-20K€/jour si suspensions..." rows="4"></textarea>
+              <div class="gen-textarea-foot">
+                <span style="font-size:11px;color:var(--text3)">Cmd+Enter pour générer</span>
+                <span style="font-size:11px;color:var(--text3)" id="cc">0 car.</span>
+              </div>
+            </div>
+            <div class="gen-controls">
+              <select class="gen-select" id="nbSelect">
+                <option>1 version</option>
+                <option selected>3 versions</option>
+                <option>5 versions</option>
+              </select>
+              <button class="gen-go" id="genBtn" onclick="doGen()"><span>Générer</span><span>→</span></button>
+            </div>
+          </div>
+
+          <div class="loading-bar" id="loading">
+            <div class="spin"></div>
+            <span class="loading-text">Génération en cours — Agent IA Smartregs actif...</span>
+          </div>
+
+          <div id="outArea" style="display:none">
+            <div class="out-header">
+              <div class="out-label"><div class="out-dot"></div>Contenu généré</div>
+              <div class="out-actions">
+                <button class="act" onclick="copyAll()">📋 Tout copier</button>
+                <button class="act dark" onclick="exportPDF()">⬇ PDF</button>
+                <button class="act prim" onclick="saveOut()">Sauvegarder</button>
+              </div>
+            </div>
+            <div id="cards"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         PAGE: ANALYTICS
+    ══════════════════════════════════════════════ -->
+    <div class="page" id="p-analytics">
+      <div class="grid4">
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,#0066FF,#4DA6FF)"></div>
+          <div class="kpi-label">Taux ouverture email</div>
+          <div class="kpi-val">34%</div>
+          <div class="kpi-delta up">↑ +6% vs moy. secteur</div>
+          <div class="kpi-sub">Secteur SaaS : 28%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,#00E5A0,#00C9A7)"></div>
+          <div class="kpi-label">Engagement LinkedIn</div>
+          <div class="kpi-val">4.2%</div>
+          <div class="kpi-delta up">↑ Top 20% secteur</div>
+          <div class="kpi-sub">Secteur SaaS : 2.1%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,#F59E0B,#FFD23F)"></div>
+          <div class="kpi-label">Taux clic email</div>
+          <div class="kpi-val">8.1%</div>
+          <div class="kpi-delta down">↓ -1.2% vs mois dernier</div>
+          <div class="kpi-sub">Objectif : 10%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-accent" style="background:linear-gradient(90deg,#A78BFA,#C084FC)"></div>
+          <div class="kpi-label">Conversion contenu→lead</div>
+          <div class="kpi-val">6.4%</div>
+          <div class="kpi-delta up">↑ Excellent</div>
+          <div class="kpi-sub">Secteur SaaS : 3.2%</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Performance par canal</div><div class="card-sub">Leads générés par source</div></div>
+          </div>
+          <canvas id="channelChart" height="150"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Engagement LinkedIn — Posts</div><div class="card-sub">4 semaines glissantes</div></div>
+            <span class="card-badge badge-green">+4.2% moy.</span>
+          </div>
+          <canvas id="engagementChart" height="150"></canvas>
+        </div>
+      </div>
+
+      <div class="card mb16">
+        <div class="card-head">
+          <div><div class="card-title">Score des contenus générés</div><div class="card-sub">Analyse IA — Lisibilité, Accroche, Conversion estimée</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:12px;padding:8px 12px;background:var(--bg);border-radius:8px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">
+            <div>Contenu</div><div style="text-align:center">Lisibilité</div><div style="text-align:center">Accroche</div><div style="text-align:center">Conversion</div><div style="text-align:center">Score global</div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;align-items:center">
+            <div style="font-size:12px;font-weight:600">Post LinkedIn — Risque GPSR Amazon (analogie RGPD)</div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#00B882">92</span></div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#00B882">88</span></div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#00B882">85</span></div>
+            <div style="text-align:center"><span style="font-size:16px;font-weight:700;font-family:'Crimson Pro',serif;color:#00B882">88</span><span style="font-size:9px;color:var(--text3)">/100</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;align-items:center">
+            <div style="font-size:12px;font-weight:600">Email séquence J+1 — Premier contact</div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#F59E0B">78</span></div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#00B882">82</span></div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#F59E0B">74</span></div>
+            <div style="text-align:center"><span style="font-size:16px;font-weight:700;font-family:'Crimson Pro',serif;color:#F59E0B">78</span><span style="font-size:9px;color:var(--text3)">/100</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;align-items:center">
+            <div style="font-size:12px;font-weight:600">Post LinkedIn — 3 erreurs conformité GPSR</div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#00B882">85</span></div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#F59E0B">76</span></div>
+            <div style="text-align:center"><span style="font-size:13px;font-weight:700;font-family:'Crimson Pro',serif;color:#00B882">80</span></div>
+            <div style="text-align:center"><span style="font-size:16px;font-weight:700;font-family:'Crimson Pro',serif;color:#00B882">80</span><span style="font-size:9px;color:var(--text3)">/100</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         PAGE: CALENDRIER
+    ══════════════════════════════════════════════ -->
+    <div class="page" id="p-calendar">
+      <div class="grid-left" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Mars 2026</div><div class="card-sub">Calendrier éditorial</div></div>
+            <div style="display:flex;gap:6px">
+              <button class="act">← Fév</button>
+              <button class="act prim">Avr →</button>
+            </div>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-day-head">Lun</div><div class="cal-day-head">Mar</div><div class="cal-day-head">Mer</div><div class="cal-day-head">Jeu</div><div class="cal-day-head">Ven</div><div class="cal-day-head">Sam</div><div class="cal-day-head">Dim</div>
+            <div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div>
+            <div class="cal-day"><div class="cal-day-num">1</div></div>
+            <div class="cal-day"><div class="cal-day-num">2</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">3</div><div class="cal-event ce-li">Post LI — GPSR risque</div></div>
+            <div class="cal-day today"><div class="cal-day-num">4</div><div class="cal-event ce-em">Email J+1 seq.</div></div>
+            <div class="cal-day"><div class="cal-day-num">5</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">6</div><div class="cal-event ce-li">Post LI — ROI</div></div>
+            <div class="cal-day"><div class="cal-day-num">7</div></div>
+            <div class="cal-day"><div class="cal-day-num">8</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">10</div><div class="cal-event ce-li">Post LI — Témoignage</div><div class="cal-event ce-em">Email J+3</div></div>
+            <div class="cal-day"><div class="cal-day-num">11</div></div>
+            <div class="cal-day"><div class="cal-day-num">12</div></div>
+            <div class="cal-day"><div class="cal-day-num">13</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">13</div><div class="cal-event ce-ig">IG carousel</div></div>
+            <div class="cal-day"><div class="cal-day-num">14</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">15</div><div class="cal-event" style="background:rgba(245,158,11,.15);color:#D97706">🗓 Comité mensuel</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">17</div><div class="cal-event ce-em">Email J+7</div></div>
+            <div class="cal-day"><div class="cal-day-num">18</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">19</div><div class="cal-event ce-li">Post LI — Actualité</div></div>
+            <div class="cal-day"><div class="cal-day-num">20</div></div>
+            <div class="cal-day"><div class="cal-day-num">21</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">24</div><div class="cal-event ce-em">Email J+14</div><div class="cal-event ce-li">Post LI — Plan</div></div>
+            <div class="cal-day"><div class="cal-day-num">25</div></div>
+            <div class="cal-day"><div class="cal-day-num">26</div></div>
+            <div class="cal-day has-content"><div class="cal-day-num">27</div><div class="cal-event ce-li">Post LI — Bilan</div></div>
+            <div class="cal-day"><div class="cal-day-num">28</div></div>
+            <div class="cal-day"><div class="cal-day-num">29</div></div>
+            <div class="cal-day"><div class="cal-day-num">30</div></div>
+            <div class="cal-day"><div class="cal-day-num">31</div></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card card-sm">
+            <div class="card-head" style="margin-bottom:10px"><div><div class="card-title">Résumé mars</div></div></div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(0,102,255,.06);border-radius:7px"><span style="font-weight:600;color:var(--acc2)">𝓛 LinkedIn</span><span>6 posts</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(0,229,160,.06);border-radius:7px"><span style="font-weight:600;color:#00B882">✉ Email</span><span>4 emails</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 10px;background:rgba(225,48,108,.06);border-radius:7px"><span style="font-weight:600;color:#E1306C">◎ Instagram</span><span>1 carousel</span></div>
+            </div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-head" style="margin-bottom:10px"><div><div class="card-title">Prochaine action</div></div></div>
+            <div style="background:linear-gradient(135deg,rgba(0,102,255,.06),rgba(0,229,160,.04));border:1px solid rgba(0,102,255,.1);border-radius:10px;padding:12px">
+              <div style="font-size:10px;color:var(--acc2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Demain — 8h00</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">Post LinkedIn — Témoignage client</div>
+              <div style="font-size:11px;color:var(--text2)">Fenêtre optimale : Mar 8h-10h (+47% engagement)</div>
+              <button class="act prim" style="margin-top:10px;width:100%;justify-content:center" onclick="goPage('generator',document.querySelector('[onclick*=generator]'))">Générer maintenant →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         PAGE: BRIEF
+    ══════════════════════════════════════════════ -->
+    <div class="page" id="p-brief">
+      <div class="grid2">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-head"><div><div class="card-title">L'entreprise</div></div><span class="card-badge badge-green">Configuré</span></div>
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div style="display:flex;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px"><div style="width:140px;color:var(--text2);font-weight:600;flex-shrink:0">Nom</div><div>Smartregs</div></div>
+              <div style="display:flex;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px"><div style="width:140px;color:var(--text2);font-weight:600;flex-shrink:0">Secteur</div><div>SaaS Conformité GPSR · Amazon EU</div></div>
+              <div style="display:flex;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px"><div style="width:140px;color:var(--text2);font-weight:600;flex-shrink:0">Modèle</div><div>One-shot 79€/produit · Abo 249€/mois</div></div>
+              <div style="display:flex;padding:9px 0;font-size:13px"><div style="width:140px;color:var(--text2);font-weight:600;flex-shrink:0">USP</div><div>Rapport GPSR 48h · 79€ vs 500€ consultant</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><div class="card-title">La cible</div></div></div>
+            <div style="font-size:13px;line-height:1.8;color:var(--text2)">CEO / Directeur E-commerce<br>PME 50-200 SKUs Amazon · CA 500K-5M€<br>Importe d'Asie · Pas de juridique interne<br>Douleur : blocage compte + coût conformité</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-head"><div><div class="card-title">Ton de marque</div></div></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+              <span style="padding:4px 10px;border-radius:20px;background:rgba(0,102,255,.1);color:var(--acc2);font-size:11px;font-weight:700">Direct</span>
+              <span style="padding:4px 10px;border-radius:20px;background:rgba(0,102,255,.1);color:var(--acc2);font-size:11px;font-weight:700">Pragmatique</span>
+              <span style="padding:4px 10px;border-radius:20px;background:rgba(0,102,255,.1);color:var(--acc2);font-size:11px;font-weight:700">Stripe-like</span>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.7">
+              <div style="margin-bottom:4px">✓ Chiffres concrets toujours</div>
+              <div style="margin-bottom:4px">✓ Phrases courtes</div>
+              <div style="margin-bottom:4px">✗ Corporate · Jargon · Superlatifs</div>
+              <div>Référence : Stripe, Linear, Notion</div>
+            </div>
+          </div>
+          <div class="card" style="background:linear-gradient(135deg,#FFFBF0,#FFF8E7);border-color:#FDE68A">
+            <div class="card-head"><div><div class="card-title">⚠️ Contraintes légales</div></div></div>
+            <div style="font-size:12px;color:#78350F;line-height:1.8">
+              <strong>JAMAIS :</strong><br>
+              "garantit la conformité" · "certifie le produit"<br>"100% conforme" · "validé par les autorités"<br><br>
+              <strong>TOUJOURS :</strong><br>
+              "pré-diagnostic automatisé" · "analyse préliminaire"<br>"validation finale par un expert recommandée"
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ═══ CMO DASHBOARD ═══ -->
+    <div class="page" id="p-cmo-dashboard">
+      <div style="padding:22px 28px">
+        <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-size:15px;font-weight:700">3 clients actifs</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Score moyen : 61/100 · 2 alertes actives</div></div>
+          <button class="tb-btn" style="background:var(--acc2);color:white;border-color:var(--acc2)">+ Nouveau client</button>
+        </div>
+        <div class="cmo-grid">
+          <div class="client-card active" onclick="switchToClient('Smartregs','SM')">
+            <div class="cl-head"><div class="cl-av" style="background:linear-gradient(135deg,#0F62FE,#00A878)">SR</div><div><div class="cl-name">Smartregs</div><div class="cl-sector">SaaS · Conformité GPSR</div></div><span class="card-badge badge-green" style="margin-left:auto">Actif</span></div>
+            <div class="cl-score-row"><div><div class="cl-score">72</div><div class="cl-score-lbl">Score marketing</div></div><div class="cl-score-bar"><div class="cl-score-fill" style="width:72%;background:linear-gradient(90deg,#0F62FE,#00A878)"></div></div></div>
+            <div class="cl-stats"><div class="cl-stat"><div class="cl-stat-val">14</div><div class="cl-stat-lbl">Leads</div></div><div class="cl-stat"><div class="cl-stat-val">23</div><div class="cl-stat-lbl">Contenus</div></div><div class="cl-stat"><div class="cl-stat-val">31h</div><div class="cl-stat-lbl">Économisé</div></div></div>
+            <div class="cl-alert">🚨 Email J+7 : taux ouverture en baisse</div>
+          </div>
+          <div class="client-card" onclick="switchToClient('FlowHR','FH')">
+            <div class="cl-head"><div class="cl-av" style="background:linear-gradient(135deg,#8B5CF6,#EC4899)">FH</div><div><div class="cl-name">FlowHR</div><div class="cl-sector">SaaS · RH & Onboarding</div></div><span class="card-badge badge-blue" style="margin-left:auto">Actif</span></div>
+            <div class="cl-score-row"><div><div class="cl-score">65</div><div class="cl-score-lbl">Score marketing</div></div><div class="cl-score-bar"><div class="cl-score-fill" style="width:65%;background:linear-gradient(90deg,#8B5CF6,#EC4899)"></div></div></div>
+            <div class="cl-stats"><div class="cl-stat"><div class="cl-stat-val">8</div><div class="cl-stat-lbl">Leads</div></div><div class="cl-stat"><div class="cl-stat-val">17</div><div class="cl-stat-lbl">Contenus</div></div><div class="cl-stat"><div class="cl-stat-val">22h</div><div class="cl-stat-lbl">Économisé</div></div></div>
+          </div>
+          <div class="client-card" onclick="switchToClient('Cuppycakes','CC')">
+            <div class="cl-head"><div class="cl-av" style="background:linear-gradient(135deg,#F97316,#FBBF24)">CC</div><div><div class="cl-name">Cuppycakes</div><div class="cl-sector">F&B · Mini cupcakes Nice</div></div><span class="card-badge badge-orange" style="margin-left:auto">Setup</span></div>
+            <div class="cl-score-row"><div><div class="cl-score">48</div><div class="cl-score-lbl">Score marketing</div></div><div class="cl-score-bar"><div class="cl-score-fill" style="width:48%;background:linear-gradient(90deg,#F97316,#FBBF24)"></div></div></div>
+            <div class="cl-stats"><div class="cl-stat"><div class="cl-stat-val">2</div><div class="cl-stat-lbl">Leads</div></div><div class="cl-stat"><div class="cl-stat-val">5</div><div class="cl-stat-lbl">Contenus</div></div><div class="cl-stat"><div class="cl-stat-val">8h</div><div class="cl-stat-lbl">Économisé</div></div></div>
+            <div class="cl-alert">⚠️ Brief incomplet — onboarding en cours</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">Tâches prioritaires — tous clients</div><div class="card-sub">Cette semaine</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 13px;border:1px solid rgba(239,68,68,.15);background:rgba(239,68,68,.04);border-radius:9px"><span style="font-size:11px;font-weight:700;background:rgba(15,98,254,.1);color:#0F62FE;padding:2px 8px;border-radius:5px">Smartregs</span><div style="font-size:12px;font-weight:600;flex:1">A/B test objet email J+7 — taux 18% vs 28% attendu</div><button class="tb-btn" style="font-size:10px;padding:4px 10px" onclick="setMode('client')">Agir →</button></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 13px;border:1px solid rgba(245,158,11,.15);background:rgba(245,158,11,.04);border-radius:9px"><span style="font-size:11px;font-weight:700;background:rgba(139,92,246,.1);color:#8B5CF6;padding:2px 8px;border-radius:5px">FlowHR</span><div style="font-size:12px;font-weight:600;flex:1">Générer plan marketing mars — délai J+3</div><button class="tb-btn" style="font-size:10px;padding:4px 10px" onclick="switchToClient('FlowHR','FH');goPage('generator',null)">Générer</button></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 13px;border:1px solid var(--border);background:var(--bg);border-radius:9px"><span style="font-size:11px;font-weight:700;background:rgba(249,115,22,.1);color:#F97316;padding:2px 8px;border-radius:5px">Cuppycakes</span><div style="font-size:12px;font-weight:600;flex:1">Finaliser brief onboarding — manque : concurrents, ton de marque</div><button class="tb-btn" style="font-size:10px;padding:4px 10px">Relancer</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CMO TASKS ═══ -->
+    <div class="page" id="p-cmo-tasks">
+      <div style="padding:22px 28px">
+        <div class="card"><div class="card-head"><div class="card-title">Tâches en cours</div></div>
+        <div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Vue en construction</div></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- PREVIEW MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Prévisualisation</div>
+      <button class="modal-x" onclick="closeModalBtn()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="tmsg"></span></div>
+
+<script>
+// ── STATE ──
+let platform = 'LinkedIn';
+let rawText = '';
+let currentCards = [];
+let currentSlides = [];
+let currentSlideIdx = 0;
+
+// ── LOGIN ──
+function doLogin() {
+  const el = document.getElementById('login');
+  el.style.transition = 'opacity .5s';
+  el.style.opacity = '0';
+  setTimeout(() => { el.style.display='none'; document.getElementById('app').classList.add('on'); initCharts(); }, 500);
+}
+
+// ── NAV ──
+const pageTitles = {
+  overview: ['Vue d\'ensemble','Février 2026 · Semaine 8'],
+  market:   ['Marché & Veille','Intelligence marché GPSR · Europe'],
+  generator:['Générateur de contenu','Agent IA configuré Smartregs'],
+  analytics:['Analytics','Performance marketing · Février 2026'],
+  calendar: ['Calendrier éditorial','Mars 2026 · 11 contenus planifiés'],
+  brief:    ['Mon brief','Configuration de l\'agent IA']
+};
+
+function goPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  if (el) el.classList.add('on');
+  const t = pageTitles[id] || ['CMO Platform',''];
+  document.getElementById('tb-title').textContent = t[0];
+  document.getElementById('tb-sub').textContent = t[1];
+}
+
+// ── CHARTS ──
+function initCharts() {
+  // Activity chart
+  const actCtx = document.getElementById('activityChart');
+  if (actCtx) {
+    new Chart(actCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Sep','Oct','Nov','Déc','Jan','Fév'],
+        datasets: [
+          { label:'Contenus',data:[8,12,15,11,19,23],backgroundColor:'rgba(0,102,255,.15)',borderColor:'#0066FF',borderWidth:2,borderRadius:6 },
+          { label:'Leads',data:[2,3,5,4,8,14],backgroundColor:'rgba(0,229,160,.15)',borderColor:'#00E5A0',borderWidth:2,borderRadius:6,type:'line',tension:.4,pointRadius:4,fill:false }
+        ]
+      },
+      options: { responsive:true, plugins:{legend:{display:true,labels:{font:{family:'Sora',size:11},boxWidth:10,padding:12}}}, scales:{x:{grid:{display:false},ticks:{font:{family:'Sora',size:11}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Sora',size:11}}}}}
+    });
+  }
+
+  // Trend chart
+  const trendCtx = document.getElementById('trendChart');
+  if (trendCtx) {
+    new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: ['Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc','Jan','Fév'],
+        datasets: [{ label:'Volume recherche "GPSR"',data:[1200,1400,1600,2100,2400,2200,3100,4200,5800,7200,15000,28000],borderColor:'#EF4444',backgroundColor:'rgba(239,68,68,.08)',borderWidth:2.5,tension:.4,pointRadius:3,fill:true }]
+      },
+      options: { responsive:true, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false},ticks:{font:{family:'Sora',size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Sora',size:10},callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}
+    });
+  }
+
+  // Channel chart
+  const chanCtx = document.getElementById('channelChart');
+  if (chanCtx) {
+    new Chart(chanCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['LinkedIn organique','Email sequencing','Inbound SEO','Bouche-à-oreille'],
+        datasets: [{ data:[7,4,2,1],backgroundColor:['#0066FF','#00E5A0','#A78BFA','#F59E0B'],borderWidth:0,hoverOffset:4 }]
+      },
+      options: { responsive:true, plugins:{legend:{position:'right',labels:{font:{family:'Sora',size:11},boxWidth:10,padding:10}}}}
+    });
+  }
+
+  // Engagement chart
+  const engCtx = document.getElementById('engagementChart');
+  if (engCtx) {
+    new Chart(engCtx, {
+      type: 'line',
+      data: {
+        labels: ['S1','S2','S3','S4','S5','S6','S7','S8'],
+        datasets: [
+          { label:'Smartregs',data:[2.1,2.8,3.2,2.9,3.8,4.1,3.9,4.2],borderColor:'#0066FF',backgroundColor:'rgba(0,102,255,.08)',borderWidth:2.5,tension:.4,pointRadius:3,fill:true },
+          { label:'Moy. secteur',data:[2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1],borderColor:'rgba(0,0,0,.15)',borderWidth:1.5,tension:0,pointRadius:0,borderDash:[4,4] }
+        ]
+      },
+      options: { responsive:true, plugins:{legend:{labels:{font:{family:'Sora',size:11},boxWidth:10}}}, scales:{x:{grid:{display:false},ticks:{font:{family:'Sora',size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Sora',size:10},callback:v=>v+'%'}}}}
+    });
+  }
+}
+
+// ── PLATFORM ──
+function setPlatform(el, p) {
+  document.querySelectorAll('.plat-btn').forEach(x => x.classList.remove('on'));
+  el.classList.add('on'); platform = p;
+  const map = {
+    'LinkedIn': ['Risque GPSR Amazon','ROI vs consultant','Analogie RGPD 2018','3 erreurs conformité','Stat choc semaine','Témoignage client'],
+    'Email': ['Séquence nurturing 4 mails','Relance prospect froid','Newsletter mensuelle','Offre lancement'],
+    'Instagram': ['Carousel témoignage client','Before/After stats','Stat choc visuelle','Coulisses produit'],
+    'X': ['Thread GPSR 5 tweets','Stat percutante','Opinion directe','Fil actualité réglementaire'],
+    'Plan': ['Plan mars complet','Stratégie Q2 2026','Calendrier éditorial 30j','Budget 300€ réparti'],
+    'Rapport': ['Rapport mensuel complet','Rapport comité direction','Synthèse performance','Recommandations stratégiques']
+  };
+  document.getElementById('chipRow').innerHTML = (map[p]||map['LinkedIn']).map(c=>`<div class="chip" onclick="useChip(this)">${c}</div>`).join('');
+}
+
+const chipPrompts = {
+  'Risque GPSR Amazon': 'Génère 3 posts LinkedIn sur le risque GPSR pour les vendeurs Amazon. Analogie RGPD 2018. Chiffres : 79€, 48h, 4% CA, 5-20K€/jour si suspension.',
+  'ROI vs consultant': 'Génère 1 post LinkedIn comparant Smartregs vs consultant : 79€ vs 500€, 48h vs 3 semaines. Structure percutante.',
+  'Analogie RGPD 2018': 'Génère 1 post LinkedIn sur l\'analogie GPSR 2026 = RGPD 2018. Même schéma, même urgence, mêmes sanctions.',
+  '3 erreurs conformité': 'Génère 1 post LinkedIn sur les 3 erreurs des vendeurs Amazon sur la conformité GPSR. Conséquences chiffrées.',
+  'Stat choc semaine': 'Génère 1 post LinkedIn percutant sur la stat : 78% des PME françaises pas encore conformes GPSR. Chiffre FEVAD.',
+  'Témoignage client': 'Génère 1 post LinkedIn témoignage client fictif Smartregs (e-commerce jouets, 80 SKUs, 3h50 → 48h).',
+  'Séquence nurturing 4 mails': 'Génère une séquence de 4 emails (J+1, J+3, J+7, J+14) pour un visiteur Smartregs.io sans inscription. Objectif : déclencher l\'essai.',
+  'Relance prospect froid': 'Génère 1 email de relance pour prospect silencieux depuis 2 semaines. Court, direct, humain.',
+  'Carousel témoignage client': 'Génère un carousel Instagram 3 slides témoignage client Smartregs. SLIDE 1 accroche, SLIDE 2 citation chiffrée, SLIDE 3 CTA.',
+  'Thread GPSR 5 tweets': 'Génère un thread X de 5 tweets sur le risque GPSR Amazon. Tweet 1 stat choc, tweets 2-4 développement, tweet 5 CTA Smartregs.',
+  'Plan mars complet': 'Génère le plan marketing mars pour Smartregs. Objectif : 10 leads. Budget 300€. LinkedIn + email. Semaine par semaine avec actions et budget.',
+  'Rapport mensuel complet': 'Génère un rapport marketing mensuel complet pour Smartregs : résumé performances, analyses par canal, recommandations stratégiques mois prochain, KPIs.'
+};
+
+function useChip(el) {
+  document.getElementById('prompt').value = chipPrompts[el.textContent] || `Génère contenu ${platform} sur "${el.textContent}" pour Smartregs.`;
+  document.getElementById('prompt').focus();
+  updateCC();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('prompt').addEventListener('input', updateCC);
+  document.getElementById('prompt').addEventListener('keydown', e => { if ((e.metaKey||e.ctrlKey) && e.key==='Enter') doGen(); });
+});
+
+function updateCC() {
+  document.getElementById('cc').textContent = document.getElementById('prompt').value.length + ' car.';
+}
+
+// ── TEXT FORMATTING ──
+function fmt(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>');
+}
+
+function formatBody(text) {
+  const lines = text.split('\n');
+  let html = '', inList = false;
+  lines.forEach(line => {
+    const t = line.trim();
+    if (!t) { if (inList) { html += '</ul>'; inList = false; } return; }
+    if (t.match(/^[→\-\*•]/)) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += `<li>${fmt(t.replace(/^[→\-\*•]\s*/,''))}</li>`; return;
+    }
+    if (inList) { html += '</ul>'; inList = false; }
+    if (t.match(/^#+\s+/)) { html += `<p><strong>${fmt(t.replace(/^#+\s+/,''))}</strong></p>`; return; }
+    if (t.match(/^#\w/)) { html += `<div class="hashtags">${fmt(t)}</div>`; return; }
+    html += `<p>${fmt(t)}</p>`;
+  });
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function plainBody(text) {
+  return text.replace(/\*\*(.+?)\*\*/g,'$1').replace(/\*(.+?)\*/g,'$1').trim();
+}
+
+// ── PARSE CARDS ──
+function parseCards(text, plat) {
+  const cards = [];
+  const isPlan = plat === 'Plan' || plat === 'Rapport' || text.match(/Semaine\s*\d/i);
+  const isSlide = text.match(/SLIDE\s*\d/i);
+  const isEmail = plat === 'Email' || text.match(/Objet\s*:/i);
+
+  if (isPlan) { cards.push({ type:'plan', body:text, plain:plainBody(text) }); return cards; }
+  if (isSlide) {
+    const parts = text.split(/\n?\*?\*?SLIDE\s*(\d+)[^\n]*\*?\*?\n?/i);
+    for (let i = 1; i < parts.length; i += 2) {
+      const body = (parts[i+1]||'').trim();
+      cards.push({ type:'slide', num:parseInt(parts[i]), body, plain:plainBody(body) });
+    }
+    if (cards.length) return cards;
+  }
+  if (isEmail) {
+    const blocks = text.split(/\n---+\n/).filter(b => b.trim());
+    blocks.forEach((block, i) => {
+      const lines = block.trim().split('\n');
+      let subject = '', bodyLines = [];
+      lines.forEach(line => {
+        const m = line.match(/^\*?\*?Objet\s*:\*?\*?\s*(.+)/i);
+        if (m) subject = m[1].replace(/\*\*/g,'').trim();
+        else bodyLines.push(line);
+      });
+      const body = bodyLines.join('\n').trim();
+      cards.push({ type:'email', num:i+1, subject, body, plain:(subject?'Objet : '+subject+'\n\n':'')+plainBody(body) });
+    });
+    return cards;
+  }
+  const blocks = text.split(/\n---+\n/).filter(b => b.trim());
+  blocks.forEach((block, i) => {
+    const body = block.trim();
+    cards.push({ type:'post', num:blocks.length>1?i+1:null, platform:plat, body, plain:plainBody(body) });
+  });
+  return cards;
+}
+
+// ── RENDER CARDS ──
+function renderCards(cards, plat) {
+  return cards.map((card, idx) => {
+    if (card.type === 'plan') {
+      const weeks = card.body.split(/(?=\n###\s*Semaine|\n\*\*Semaine)/i).filter(w=>w.trim());
+      let inner = '';
+      if (weeks.length > 1) {
+        weeks.forEach(week => {
+          const tm = week.match(/###\s*(.+)|\*\*(.+?)\*\*/);
+          const title = tm?(tm[1]||tm[2]).trim():'';
+          const content = week.replace(/^[^\n]+\n/,'').trim();
+          if (title) inner += `<div class="plan-wk"><div class="plan-wk-title">${fmt(title)}</div>${formatBody(content)}</div>`;
+          else inner += formatBody(week);
+        });
+      } else inner = formatBody(card.body);
+      return `<div class="content-card cc-plan">
+        <div class="cc-head"><div class="cc-left"><div class="cc-icon">◈</div><div><div class="cc-lbl">Plan Marketing</div><div class="cc-sub">Plan mensuel Smartregs</div></div></div>
+        <div class="cc-actions"><button class="cc-btn" onclick="copyCard(${idx},this)">📋</button><button class="cc-btn preview-btn" onclick="previewCard(${idx})">👁 Aperçu</button><button class="cc-btn dark" onclick="exportPDF()" style="background:var(--s1);color:white;border-color:var(--s1)">⬇ PDF</button></div></div>
+        <div class="cc-body">${inner}</div></div>`;
+    }
+    if (card.type === 'slide') {
+      return `<div class="content-card cc-ig">
+        <div class="cc-head"><div class="cc-left"><div class="cc-icon">◎</div><div><div class="cc-lbl">Instagram · Slide ${card.num}</div><div class="cc-sub">Carousel</div></div></div>
+        <div class="cc-actions"><span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--bg);color:var(--text3)">Slide ${card.num}</span><button class="cc-btn" onclick="copyCard(${idx},this)">📋</button><button class="cc-btn preview-btn" onclick="previewCard(${idx})">👁 Aperçu</button></div></div>
+        <div class="cc-body">${formatBody(card.body)}</div></div>`;
+    }
+    if (card.type === 'email') {
+      return `<div class="content-card cc-em">
+        <div class="cc-head"><div class="cc-left"><div class="cc-icon">✉</div><div><div class="cc-lbl">Email ${card.num}</div><div class="cc-sub">${card.subject?'Objet défini':'Séquence'}</div></div></div>
+        <div class="cc-actions"><span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--bg);color:var(--text3)">Email ${card.num}</span><button class="cc-btn" onclick="copyCard(${idx},this)">📋</button><button class="cc-btn preview-btn" onclick="previewCard(${idx})">👁 Aperçu</button></div></div>
+        <div class="cc-body">${card.subject?`<div class="em-subj-lbl">Objet</div><div class="em-subj">${fmt(card.subject)}</div>`:''}${formatBody(card.body)}</div></div>`;
+    }
+    const icons = {LinkedIn:'in',X:'𝕏',Instagram:'◎'};
+    const cls = {LinkedIn:'cc-li',X:'cc-x',Instagram:'cc-ig'};
+    return `<div class="content-card ${cls[plat]||'cc-li'}">
+      <div class="cc-head"><div class="cc-left"><div class="cc-icon">${icons[plat]||'✦'}</div><div><div class="cc-lbl">${plat}${card.num?' · Post '+card.num:''}</div><div class="cc-sub">Prêt à publier</div></div></div>
+      <div class="cc-actions">${card.num?`<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--bg);color:var(--text3)">Post ${card.num}</span>`:''}<button class="cc-btn" onclick="copyCard(${idx},this)">📋</button><button class="cc-btn preview-btn" onclick="previewCard(${idx})">👁 Aperçu</button></div></div>
+      <div class="cc-body">${formatBody(card.body)}</div></div>`;
+  }).join('');
+}
+
+// ── COPY ──
+function copyCard(idx, btn) {
+  navigator.clipboard.writeText(currentCards[idx]?.plain||'').then(() => {
+    btn.textContent = '✓'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function copyAll() { navigator.clipboard.writeText(rawText).then(() => showToast('Tout copié ✓')); }
+
+// ── PREVIEW ──
+function previewCard(idx) {
+  const card = currentCards[idx];
+  if (!card) return;
+  document.getElementById('modalTitle').textContent = 'Prévisualisation — ' + (card.type==='email'?'Email':card.type==='slide'?'Instagram':platform);
+  const body = document.getElementById('modalBody');
+  if (card.type === 'email') {
+    body.innerHTML = `<div class="em-mock"><div class="em-m-head"><div class="em-m-row"><div class="em-m-key">De :</div><div>sarah@smartregs.io</div></div><div class="em-m-row"><div class="em-m-key">À :</div><div>prospect@entreprise.fr</div></div></div>${card.subject?`<div class="em-m-subj">${fmt(card.subject)}</div>`:''}<div class="em-m-body">${formatBody(card.body)}</div></div>`;
+  } else if (card.type === 'slide') {
+    currentSlides = currentCards.filter(c=>c.type==='slide');
+    currentSlideIdx = currentSlides.findIndex(s=>s.num===card.num)||0;
+    body.innerHTML = buildIGPreview();
+  } else if (card.type === 'post' && card.platform === 'LinkedIn') {
+    body.innerHTML = `<div class="li-mock"><div class="li-m-head"><div class="li-m-av">SR</div><div><div class="li-m-name">Smartregs</div><div class="li-m-role">SaaS GPSR · 1er choix vendeurs Amazon Europe</div></div></div><div class="li-m-body">${formatBody(card.body)}</div><div class="li-m-foot"><div class="li-m-act">👍 J'aime</div><div class="li-m-act">💬 Commenter</div><div class="li-m-act">🔁 Republier</div><div class="li-m-act">📤 Envoyer</div></div></div>`;
+  } else {
+    body.innerHTML = `<div style="padding:14px;background:var(--bg);border-radius:10px;font-size:13px;line-height:1.8">${formatBody(card.body)}</div>`;
+  }
+  document.getElementById('modalOverlay').classList.add('on');
+}
+
+function buildIGPreview() {
+  const s = currentSlides[currentSlideIdx];
+  return `<div class="ig-mock">
+    <div class="ig-m-head"><div class="ig-m-av">SR</div><div class="ig-m-name">smartregs.io</div></div>
+    <div class="ig-m-slide"><div class="ig-m-slide-inner"><div class="ig-m-slide-num">SLIDE ${s.num} / ${currentSlides.length}</div><div class="ig-m-slide-body" id="igBody">${formatBody(s.body)}</div></div></div>
+    <div class="ig-m-dots" id="igDots">${currentSlides.map((_,i)=>`<div class="ig-m-dot ${i===currentSlideIdx?'on':''}"></div>`).join('')}</div>
+    <div class="ig-m-foot"><div class="ig-m-acts"><span>❤️</span><span>💬</span><span>📤</span></div><div class="ig-m-cap"><strong>smartregs.io</strong> ${fmt((currentSlides[0]?.plain||'').substring(0,80))}...</div></div>
+  </div>
+  <div class="slide-nav-row">
+    <button class="snav-btn" onclick="navSlide(-1)" ${currentSlideIdx===0?'disabled':''}>← Précédent</button>
+    <span class="snav-counter" id="sCounter">Slide ${currentSlideIdx+1} / ${currentSlides.length}</span>
+    <button class="snav-btn" onclick="navSlide(1)" ${currentSlideIdx===currentSlides.length-1?'disabled':''}>Suivant →</button>
+  </div>`;
+}
+
+function navSlide(dir) {
+  currentSlideIdx = Math.max(0, Math.min(currentSlides.length-1, currentSlideIdx+dir));
+  const s = currentSlides[currentSlideIdx];
+  document.getElementById('igBody').innerHTML = formatBody(s.body);
+  document.getElementById('sCounter').textContent = `Slide ${currentSlideIdx+1} / ${currentSlides.length}`;
+  const dots = document.getElementById('igDots').querySelectorAll('.ig-m-dot');
+  dots.forEach((d,i) => d.classList.toggle('on', i===currentSlideIdx));
+  document.querySelector('.snav-btn:first-of-type').disabled = currentSlideIdx===0;
+  document.querySelector('.snav-btn:last-of-type').disabled = currentSlideIdx===currentSlides.length-1;
+}
+
+function closeModal(e) { if (e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('on'); }
+function closeModalBtn() { document.getElementById('modalOverlay').classList.remove('on'); }
+
+// ── PDF ──
+function exportPDF() { showToast('Ouverture impression PDF...'); setTimeout(()=>window.print(),300); }
+
+// ── GENERATE ──
+async function doGen() {
+  const prompt = document.getElementById('prompt').value.trim();
+  if (!prompt) { showToast('Écris ta demande d\'abord'); return; }
+  const btn = document.getElementById('genBtn');
+  const loading = document.getElementById('loading');
+  const outArea = document.getElementById('outArea');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin"></div>';
+  loading.classList.add('on');
+  outArea.style.display = 'none';
+
+  const system = `Tu es le CMO de Smartregs. SaaS conformité GPSR pour vendeurs Amazon Europe.
+PROPOSITION : Rapport GPSR en 48h à 79€/produit vs 500€ consultant.
+CIBLE : CEO/Directeur E-commerce PME 50-200 SKUs Amazon.
+TON : Direct, pragmatique, Stripe-like. Phrases courtes. Chiffres concrets toujours.
+FORMAT OBLIGATOIRE :
+- Sépare chaque post/email par "---" seul sur une ligne
+- Emails : première ligne = "Objet : [sujet]"
+- Instagram carousel : "SLIDE 1 — [titre]" pour chaque slide
+- Plans : "### Semaine 1 — [focus]" pour chaque semaine
+- Listes : "→ item"
+- Gras : **texte**
+- Commence directement le contenu, sans titre introductif
+CONTRAINTES LÉGALES : JAMAIS "garantit conformité" → "pré-diagnostic". JAMAIS "certifie" → "analyse préliminaire". Recommander validation expert.
+ARGUMENTS : 79€ vs 500€, 48h vs 3 semaines, amendes 4% CA, 5-20K€/jour si suspension.
+PLATEFORME : ${platform}`;
+
+  try {
+    const res = await fetch('/api/generate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1600, system, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await res.json();
+    rawText = data.content?.[0]?.text || 'Erreur.';
+    currentCards = parseCards(rawText, platform);
+    document.getElementById('cards').innerHTML = renderCards(currentCards, platform);
+    outArea.style.display = 'block';
+  } catch(e) {
+    document.getElementById('cards').innerHTML = '<div class="content-card cc-li"><div class="cc-body"><p style="color:#EF4444">⚠️ Erreur connexion. Vérifie la clé API.</p></div></div>';
+    outArea.style.display = 'block';
+  }
+
+  loading.classList.remove('on');
+  btn.disabled = false;
+  btn.innerHTML = '<span>Générer</span><span>→</span>';
+}
+
+function saveOut() { showToast('Sauvegardé dans l\'historique ✓'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('tmsg').textContent = msg;
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 2800);
+}
+
+// ── MODE SWITCH ──
+function setMode(m) {
+  document.getElementById('modeClient').classList.toggle('on', m==='client');
+  document.getElementById('modeCMO').classList.toggle('on', m==='cmo');
+  document.getElementById('navClient').style.display = m==='client' ? 'block' : 'none';
+  document.getElementById('navCMO').style.display = m==='cmo' ? 'block' : 'none';
+
+  if (m === 'cmo') {
+    document.getElementById('app').querySelector('.sb-pname').textContent = 'Edouard B.';
+    document.getElementById('app').querySelector('.sb-prole').textContent = 'CMO · 3 clients';
+    document.getElementById('app').querySelector('.sb-av').textContent = 'EB';
+    document.getElementById('app').querySelector('.tb-chip') && (document.getElementById('app').querySelector('.tb-chip').textContent = 'Vue CMO');
+    goPage('cmo-dashboard', document.querySelector('#navCMO .sb-item'));
+  } else {
+    document.getElementById('app').querySelector('.sb-pname').textContent = 'Sarah M.';
+    document.getElementById('app').querySelector('.sb-prole').textContent = 'CEO · Smartregs';
+    document.getElementById('app').querySelector('.sb-av').textContent = 'SM';
+    goPage('overview', document.querySelector('#navClient .sb-item'));
+  }
+}
+
+function switchToClient(name, av) {
+  document.querySelectorAll('.client-card').forEach(c => c.classList.remove('active'));
+  if(event && event.currentTarget) event.currentTarget.classList.add('active');
+  setMode('client');
+  document.getElementById('app').querySelector('.sb-pname').textContent = name === 'Smartregs' ? 'Sarah M.' : name === 'FlowHR' ? 'Marie D.' : 'Jean-Marc T.';
+  document.getElementById('app').querySelector('.sb-av').textContent = av;
+  document.getElementById('app').querySelector('.sb-client') && (document.getElementById('app').querySelector('.sb-client').textContent = name);
+  showToast('Espace ' + name + ' chargé ✓');
+}
+
+// ── LIVE NEWS ──
+async function loadLiveNews() {
+  const btn = document.getElementById('newsBtn');
+  const container = document.getElementById('newsContainer');
+  btn.textContent = '↻ ...';
+  btn.disabled = true;
+  container.innerHTML = '<div class="news-loading"><div class="spin"></div>Recherche actualités GPSR en temps réel...</div>';
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: `Tu es un veilleur réglementaire GPSR. Cherche les 3 actualités les plus récentes sur GPSR conformité e-commerce Amazon Europe.
+Réponds UNIQUEMENT avec JSON valide (pas de backticks, pas de markdown) :
+{"news":[{"source":"Nom source","title":"Titre","desc":"Description 2 phrases","date":"Date","tags":["tag1","tag2"]}]}
+3 news max. Sources officielles ou médias spécialisés.`,
+        messages: [{ role: 'user', content: 'Actualités GPSR conformité Amazon Europe cette semaine février 2026' }]
+      })
+    });
+    const data = await res.json();
+    const text = (data.content || []).filter(c => c.type==='text').map(c => c.text).join('');
+    const match = text.match(/\{[\s\S]*\}/);
+    const parsed = match ? JSON.parse(match[0]) : null;
+
+    if (parsed && parsed.news && parsed.news.length) {
+      container.innerHTML = parsed.news.map(n => `
+        <div class="news-item">
+          <div class="news-source">${n.source}</div>
+          <div class="news-title">${n.title}</div>
+          <div class="news-desc">${n.desc}</div>
+          <div class="news-meta"><div class="news-date">${n.date}</div>${(n.tags||[]).map(t=>`<div class="news-tag">${t}</div>`).join('')}</div>
+        </div>`).join('');
+      document.getElementById('newsCount').textContent = parsed.news.length + ' nouvelles';
+      showToast('Actualités mises à jour ✓');
+    } else {
+      throw new Error('no data');
+    }
+  } catch(e) {
+    container.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text2)">Données indisponibles. Le serveur doit être démarré avec la clé API.</div>';
+  }
+  btn.textContent = '↻ Live';
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>

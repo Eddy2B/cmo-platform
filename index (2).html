@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smartregs — Marketing IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4F5F7;
+    --white: #FFFFFF;
+    --border: #E2E5ED;
+    --border2: #C8CEDC;
+    --navy: #0D1B2A;
+    --blue: #1557FF;
+    --blue-light: #EEF3FF;
+    --teal: #00B894;
+    --teal-light: #E6F9F5;
+    --orange: #FF6B35;
+    --text: #0D1B2A;
+    --text2: #4A5568;
+    --text3: #94A3B8;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── LOGIN ── */
+  .login-screen {
+    position: fixed; inset: 0;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    overflow: hidden;
+  }
+
+  .login-grid {
+    position: absolute; inset: 0;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .login-glow {
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,184,148,0.12) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    border-radius: 50%;
+  }
+
+  .login-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(21,87,255,0.15) 0%, transparent 70%);
+    bottom: -80px; left: -80px;
+    border-radius: 50%;
+  }
+
+  .login-card {
+    position: relative; z-index: 1;
+    width: 400px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 44px;
+    backdrop-filter: blur(20px);
+  }
+
+  .login-brand {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 36px;
+  }
+
+  .login-brand-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .login-brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 700;
+    color: white; letter-spacing: -0.3px;
+  }
+
+  .login-h { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: white; margin-bottom: 6px; }
+  .login-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 28px; line-height: 1.5; }
+
+  .login-field { margin-bottom: 12px; }
+
+  .login-input {
+    width: 100%; padding: 12px 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; color: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .login-input:focus { border-color: var(--teal); }
+  .login-input::placeholder { color: rgba(255,255,255,0.25); }
+
+  .login-btn {
+    width: 100%; padding: 13px;
+    background: var(--teal); border: none;
+    border-radius: 10px; color: var(--navy);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700; font-size: 14px;
+    cursor: pointer; margin-top: 8px;
+    transition: all 0.2s; letter-spacing: 0.2px;
+  }
+
+  .login-btn:hover { background: #00d4aa; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,184,148,0.3); }
+
+  .login-note { text-align: center; margin-top: 20px; font-size: 11px; color: rgba(255,255,255,0.2); }
+
+  /* ── APP ── */
+  .app { display: none; }
+  .app.visible { display: block; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    height: 60px; background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 28px; gap: 12px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 1px 0 var(--border);
+  }
+
+  .topbar-brand {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 700;
+    color: var(--navy);
+  }
+
+  .topbar-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--teal);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.8); } }
+
+  .topbar-client {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+    background: var(--blue-light); color: var(--blue);
+    letter-spacing: 0.3px;
+  }
+
+  .topbar-spacer { flex: 1; }
+
+  .topbar-stat {
+    font-size: 12px; color: var(--text2);
+    padding: 5px 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 20px;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .topbar-stat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); }
+
+  .topbar-user {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 8px 4px 12px;
+    border: 1px solid var(--border); border-radius: 24px;
+    cursor: pointer; font-size: 12px; font-weight: 600;
+  }
+
+  .topbar-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--teal));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: white;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; display: flex;
+  }
+
+  .tab {
+    padding: 14px 18px; font-size: 13px; font-weight: 500;
+    color: var(--text3); cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .tab:hover { color: var(--text2); }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+
+  .tab-count {
+    background: var(--blue); color: white;
+    font-size: 9px; padding: 1px 5px;
+    border-radius: 8px; font-weight: 700;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 28px; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--navy);
+    border-radius: 20px; padding: 28px 32px;
+    margin-bottom: 20px; position: relative; overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .hero-glow {
+    position: absolute; right: -60px; top: -60px;
+    width: 280px; height: 280px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,184,148,0.12) 0%, transparent 70%);
+  }
+
+  .hero-content { position: relative; z-index: 1; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; background: rgba(0,184,148,0.15);
+    border: 1px solid rgba(0,184,148,0.25);
+    border-radius: 20px; margin-bottom: 10px;
+    font-size: 10px; color: var(--teal); font-weight: 600;
+    letter-spacing: 0.8px; text-transform: uppercase;
+  }
+
+  .hero-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); animation: pulse 1.5s infinite; }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; font-weight: 700;
+    color: white; margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .hero-sub { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+  /* ── STATS ── */
+  .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
+
+  .stat {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 18px;
+    transition: all 0.2s;
+  }
+
+  .stat:hover { box-shadow: var(--shadow-md); border-color: var(--border2); }
+  .stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; font-weight: 600; }
+  .stat-val { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .stat-delta { font-size: 11px; color: var(--teal); font-weight: 500; }
+
+  /* ── GENERATOR ── */
+  .gen {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .gen-top {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .gen-top-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--blue-light), var(--teal-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .gen-top-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; }
+  .gen-top-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .gen-body { padding: 22px 24px; }
+
+  /* ── PILLS ── */
+  .pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+
+  .pill {
+    padding: 7px 16px; border-radius: 24px;
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid var(--border);
+    color: var(--text2); background: var(--white);
+    transition: all 0.15s;
+  }
+
+  .pill:hover { border-color: var(--blue); color: var(--blue); }
+  .pill.active { background: var(--blue); border-color: var(--blue); color: white; font-weight: 600; }
+
+  /* ── CHIPS ── */
+  .chips-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; font-weight: 600; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+
+  .chip {
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 11px; cursor: pointer; font-weight: 500;
+    border: 1px solid var(--border);
+    color: var(--text2); background: var(--bg);
+    transition: all 0.15s;
+  }
+
+  .chip:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+
+  /* ── TEXTAREA ── */
+  .ta-wrap {
+    border: 1.5px solid var(--border); border-radius: 14px;
+    overflow: hidden; margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .ta-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(21,87,255,0.06); }
+
+  .ta-wrap textarea {
+    width: 100%; border: none; outline: none;
+    padding: 14px 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; color: var(--text);
+    resize: none; line-height: 1.6; min-height: 80px;
+    background: white;
+  }
+
+  .ta-wrap textarea::placeholder { color: var(--text3); }
+
+  .ta-footer {
+    padding: 8px 14px; border-top: 1px solid var(--border);
+    background: var(--bg);
+    display: flex; justify-content: space-between;
+  }
+
+  .ta-hint { font-size: 11px; color: var(--text3); }
+
+  /* ── ROW ── */
+  .gen-row { display: flex; gap: 10px; align-items: center; }
+
+  .tone-sel {
+    flex: 1; padding: 10px 14px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 12px; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text2); background: white; outline: none; cursor: pointer;
+    font-weight: 500;
+  }
+
+  .gen-btn {
+    padding: 10px 26px; border-radius: 10px;
+    background: var(--blue); color: white; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700; font-size: 13px;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+
+  .gen-btn:hover { background: #0044e0; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(21,87,255,0.3); }
+  .gen-btn:disabled { background: var(--text3); transform: none; box-shadow: none; cursor: not-allowed; }
+
+  /* ── LOADING ── */
+  .loading {
+    display: none; align-items: center; gap: 12px;
+    padding: 16px 18px; margin-top: 14px;
+    background: var(--blue-light); border-radius: 12px;
+    border: 1px solid rgba(21,87,255,0.1);
+  }
+
+  .loading.on { display: flex; }
+
+  .spin {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(21,87,255,0.2);
+    border-top-color: var(--blue);
+    animation: spin 0.7s linear infinite; flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 12px; color: var(--blue); font-weight: 500; }
+
+  /* ── OUTPUT QUALI ── */
+  .output {
+    display: none; margin-top: 18px;
+    border-radius: 16px; overflow: hidden;
+    border: 1.5px solid var(--border);
+    animation: fadeUp 0.3s ease;
+  }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .output.on { display: block; }
+
+  .output-bar {
+    padding: 12px 18px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .output-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text2); font-weight: 700;
+  }
+
+  .output-label-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+  .output-actions { display: flex; gap: 6px; }
+
+  .act-btn {
+    padding: 5px 12px; border-radius: 7px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border);
+    background: white; color: var(--text2);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .act-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .act-btn.prim { background: var(--blue); color: white; border-color: var(--blue); }
+  .act-btn.prim:hover { background: #0044e0; }
+
+  /* ── RENDERED CONTENT ── */
+  .output-rendered {
+    padding: 24px 26px;
+    background: white;
+    font-size: 14px; line-height: 1.75;
+    color: var(--text);
+    max-height: 520px; overflow-y: auto;
+  }
+
+  .output-rendered::-webkit-scrollbar { width: 4px; }
+  .output-rendered::-webkit-scrollbar-track { background: transparent; }
+  .output-rendered::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── MARKDOWN STYLES ── */
+  .output-rendered h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--navy); margin: 0 0 16px;
+    padding-bottom: 10px; border-bottom: 2px solid var(--border);
+  }
+
+  .output-rendered h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-weight: 700;
+    color: var(--navy); margin: 24px 0 10px;
+  }
+
+  .output-rendered h3 {
+    font-size: 13px; font-weight: 700;
+    color: var(--blue); margin: 16px 0 8px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .output-rendered p { margin-bottom: 12px; }
+
+  .output-rendered strong {
+    font-weight: 700; color: var(--navy);
+  }
+
+  .output-rendered em { font-style: italic; color: var(--text2); }
+
+  .output-rendered ul, .output-rendered ol {
+    padding-left: 20px; margin-bottom: 14px;
+  }
+
+  .output-rendered li { margin-bottom: 6px; line-height: 1.6; }
+
+  .output-rendered hr {
+    border: none; border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* ── SLIDE CARDS ── */
+  .slide-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 20px;
+    margin-bottom: 12px; position: relative;
+    transition: all 0.2s;
+  }
+
+  .slide-card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
+
+  .slide-num {
+    position: absolute; top: -10px; left: 16px;
+    background: var(--blue); color: white;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .slide-card h2 { margin-top: 6px !important; }
+
+  /* ── QUOTE STYLE ── */
+  .output-rendered blockquote {
+    border-left: 3px solid var(--teal);
+    padding: 10px 16px; margin: 14px 0;
+    background: var(--teal-light); border-radius: 0 10px 10px 0;
+    font-style: italic; color: var(--text2);
+  }
+
+  /* ── INLINE CODE ── */
+  .output-rendered code {
+    background: var(--bg); padding: 2px 6px;
+    border-radius: 4px; font-size: 12px;
+    font-family: monospace; color: var(--blue);
+    border: 1px solid var(--border);
+  }
+
+  /* ── HISTORY ── */
+  .hist-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .hist-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: all 0.15s;
+  }
+
+  .hist-card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
+
+  .hist-ico {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+
+  .hist-info { flex: 1; }
+  .hist-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .hist-meta { font-size: 11px; color: var(--text3); }
+
+  .hist-badge { font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+  .b-li { background: var(--blue-light); color: var(--blue); }
+  .b-em { background: var(--teal-light); color: var(--teal); }
+  .b-pl { background: #FFF7ED; color: var(--orange); }
+
+  /* ── BRIEF ── */
+  .brief-card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+  .brief-section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .brief-section:last-child { border-bottom: none; }
+
+  .brief-section-head {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Playfair Display', serif;
+    font-size: 14px; font-weight: 700;
+    margin-bottom: 14px; color: var(--navy);
+  }
+
+  .brief-ico {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--blue-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+
+  .brief-row { display: flex; padding: 8px 0; border-bottom: 1px solid var(--bg); font-size: 13px; }
+  .brief-row:last-child { border-bottom: none; }
+  .brief-k { width: 140px; color: var(--text2); font-weight: 600; flex-shrink: 0; }
+  .brief-v { color: var(--text); }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin: 2px 2px 0 0; }
+  .tag-blue { background: var(--blue-light); color: var(--blue); }
+  .tag-red { background: #FFF0F0; color: #D93025; }
+
+  .legal-box {
+    background: #FFFBF0; border: 1px solid #FFE4A0;
+    border-radius: 12px; padding: 14px 16px;
+    font-size: 12px; color: #7A5A00; line-height: 1.7;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--navy); color: white;
+    border-radius: 12px; padding: 12px 18px;
+    font-size: 13px; font-weight: 500; z-index: 999;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 16px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .topbar { padding: 0 16px; }
+    .tabs { padding: 0 16px; }
+    .topbar-stat { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-grid"></div>
+  <div class="login-glow"></div>
+  <div class="login-glow2"></div>
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-brand-icon">⚡</div>
+      <div class="login-brand-name">CMO Platform</div>
+    </div>
+    <div class="login-h">Bon retour 👋</div>
+    <div class="login-sub">Accède à ton espace marketing IA personnalisé</div>
+    <div class="login-field"><input class="login-input" type="email" placeholder="Email" value="sarah@smartregs.io"></div>
+    <div class="login-field"><input class="login-input" type="password" placeholder="Mot de passe" value="••••••••"></div>
+    <button class="login-btn" onclick="login()">Accéder à mon espace →</button>
+    <div class="login-note">Propulsé par Claude AI · Données sécurisées EU</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+
+  <div class="topbar">
+    <div class="topbar-brand"><div class="topbar-dot"></div>CMO Platform</div>
+    <div class="topbar-client">Smartregs</div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-stat"><div class="topbar-stat-dot"></div>47 contenus ce mois</div>
+    <div class="topbar-user">Sarah M.<div class="topbar-avatar">SM</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="goPage('gen',this)">✦ Générateur</div>
+    <div class="tab" onclick="goPage('hist',this)">◷ Historique <span class="tab-count" id="histCount">3</span></div>
+    <div class="tab" onclick="goPage('brief',this)">◉ Mon brief</div>
+  </div>
+
+  <!-- GENERATOR -->
+  <div class="page active" id="page-gen">
+    <div class="wrap">
+
+      <div class="hero">
+        <div class="hero-grid"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-content">
+          <div class="hero-badge"><div class="hero-badge-dot"></div>IA ACTIVÉE</div>
+          <div class="hero-title">Bonjour Sarah 👋</div>
+          <div class="hero-sub">Ton agent marketing est prêt — génère du contenu en 30 secondes, calibré pour Smartregs.</div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Contenus ce mois</div><div class="stat-val">47</div><div class="stat-delta">↑ +12 vs mois dernier</div></div>
+        <div class="stat"><div class="stat-label">Temps économisé</div><div class="stat-val">23h</div><div class="stat-delta">Ce mois</div></div>
+        <div class="stat"><div class="stat-label">Prochain comité</div><div class="stat-val">J-8</div><div class="stat-delta" style="color:var(--orange)">15 mars</div></div>
+      </div>
+
+      <div class="gen">
+        <div class="gen-top">
+          <div class="gen-top-icon">✦</div>
+          <div>
+            <div class="gen-top-title">Générateur de contenu</div>
+            <div class="gen-top-sub">Agent IA configuré pour Smartregs · Ton direct & pragmatique</div>
+          </div>
+        </div>
+        <div class="gen-body">
+
+          <div class="pills" id="pillRow">
+            <div class="pill active" onclick="setPill(this,'LinkedIn')">𝓛 LinkedIn</div>
+            <div class="pill" onclick="setPill(this,'Email')">✉ Email</div>
+            <div class="pill" onclick="setPill(this,'Instagram')">◎ Instagram</div>
+            <div class="pill" onclick="setPill(this,'X')">✕ X</div>
+            <div class="pill" onclick="setPill(this,'Plan marketing')">◈ Plan mensuel</div>
+          </div>
+
+          <div class="chips-label">Suggestions rapides</div>
+          <div class="chips" id="chipRow">
+            <div class="chip" onclick="useChip(this)">Risque GPSR Amazon</div>
+            <div class="chip" onclick="useChip(this)">ROI vs consultant</div>
+            <div class="chip" onclick="useChip(this)">Analogie RGPD 2018</div>
+            <div class="chip" onclick="useChip(this)">3 erreurs conformité</div>
+            <div class="chip" onclick="useChip(this)">Séquence nurturing</div>
+          </div>
+
+          <div class="ta-wrap">
+            <textarea id="prompt" placeholder="Ex: Génère 3 posts LinkedIn sur le risque de blocage compte Amazon pour non-conformité GPSR..." rows="3"></textarea>
+            <div class="ta-footer">
+              <span class="ta-hint">Cmd+Enter pour générer</span>
+              <span class="ta-hint" id="cc">0 caractères</span>
+            </div>
+          </div>
+
+          <div class="gen-row">
+            <select class="tone-sel">
+              <option>Ton Smartregs — Direct & pragmatique</option>
+              <option>Urgence & conversion</option>
+              <option>Éducatif & pédagogue</option>
+              <option>Storytelling fondateur</option>
+            </select>
+            <button class="gen-btn" id="genBtn" onclick="generate()">
+              <span>Générer</span><span>→</span>
+            </button>
+          </div>
+
+          <div class="loading" id="loading">
+            <div class="spin"></div>
+            <span class="loading-text">Ton agent IA génère le contenu...</span>
+          </div>
+
+          <div class="output" id="output">
+            <div class="output-bar">
+              <div class="output-label"><div class="output-label-dot"></div>Contenu généré</div>
+              <div class="output-actions">
+                <button class="act-btn" onclick="copyOut()">Copier</button>
+                <button class="act-btn prim" onclick="saveOut()">Sauvegarder</button>
+              </div>
+            </div>
+            <div class="output-rendered" id="rendered"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="page" id="page-hist">
+    <div class="wrap">
+      <h2 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:20px">Historique des contenus</h2>
+      <div class="hist-list" id="histList">
+        <div class="hist-card"><div class="hist-ico">𝓛</div><div class="hist-info"><div class="hist-title">3 posts LinkedIn sur le risque GPSR Amazon</div><div class="hist-meta">Aujourd'hui à 14h32 · LinkedIn</div></div><span class="hist-badge b-li">LinkedIn</span></div>
+        <div class="hist-card"><div class="hist-ico">✉</div><div class="hist-info"><div class="hist-title">Séquence nurturing 4 emails — prospect froid</div><div class="hist-meta">Hier à 10h15 · Email</div></div><span class="hist-badge b-em">Email</span></div>
+        <div class="hist-card"><div class="hist-ico">◈</div><div class="hist-info"><div class="hist-title">Plan marketing Mars — objectif 10 leads</div><div class="hist-meta">Il y a 3 jours · Plan mensuel</div></div><span class="hist-badge b-pl">Plan</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRIEF -->
+  <div class="page" id="page-brief">
+    <div class="wrap">
+      <h2 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px">Mon brief marketing</h2>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:20px">Ces informations configurent ton agent IA — mises à jour chaque mois par ton CMO.</p>
+      <div class="brief-card">
+        <div class="brief-section">
+          <div class="brief-section-head"><div class="brief-ico">🏢</div>L'entreprise</div>
+          <div class="brief-row"><div class="brief-k">Nom</div><div class="brief-v">Smartregs</div></div>
+          <div class="brief-row"><div class="brief-k">Secteur</div><div class="brief-v">SaaS Conformité GPSR · Amazon Europe</div></div>
+          <div class="brief-row"><div class="brief-k">Stade</div><div class="brief-v">MVP</div></div>
+          <div class="brief-row"><div class="brief-k">Modèle</div><div class="brief-v">One-shot 79€/produit · Abonnement 249€/mois</div></div>
+          <div class="brief-row"><div class="brief-k">USP</div><div class="brief-v">Rapport GPSR en 48h à 79€ vs 500€ consultant</div></div>
+        </div>
+        <div class="brief-section">
+          <div class="brief-section-head"><div class="brief-ico">🎯</div>La cible</div>
+          <div class="brief-row"><div class="brief-k">Profil</div><div class="brief-v">CEO / Directeur E-commerce PME Amazon</div></div>
+          <div class="brief-row"><div class="brief-k">Canal</div><div class="brief-v">Amazon Europe · FR, DE, IT, ES, UK</div></div>
+          <div class="brief-row"><div class="brief-k">Taille</div><div class="brief-v">50-200 SKUs actifs · CA 500K€-5M€</div></div>
+          <div class="brief-row"><div class="brief-k">Douleur clé</div><div class="brief-v">Risque blocage compte · coût conformité prohibitif</div></div>
+        </div>
+        <div class="brief-section">
+          <div class="brief-section-head"><div class="brief-ico">🎨</div>Ton de marque</div>
+          <div class="brief-row"><div class="brief-k">Style</div><div class="brief-v"><span class="tag tag-blue">Direct</span><span class="tag tag-blue">Pragmatique</span><span class="tag tag-blue">Stripe-like</span></div></div>
+          <div class="brief-row"><div class="brief-k">Références</div><div class="brief-v">Stripe, Linear, Notion</div></div>
+          <div class="brief-row"><div class="brief-k">À éviter</div><div class="brief-v"><span class="tag tag-red">Corporate</span><span class="tag tag-red">Jargon</span><span class="tag tag-red">Superlatifs</span></div></div>
+        </div>
+        <div class="brief-section">
+          <div class="brief-section-head"><div class="brief-ico">⚠️</div>Contraintes légales</div>
+          <div class="legal-box">
+            <strong>JAMAIS :</strong> "garantit la conformité" · "certifie le produit" · "100% conforme" · "validé par les autorités"<br><br>
+            <strong>TOUJOURS :</strong> "pré-diagnostic automatisé" · "analyse préliminaire" · "validation finale par un expert recommandée"
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg"></span></div>
+
+<script>
+  let platform = 'LinkedIn';
+  let rawText = '';
+  let histCount = 3;
+
+  // ── LOGIN ──
+  function login() {
+    const s = document.getElementById('loginScreen');
+    s.style.transition = 'opacity 0.5s';
+    s.style.opacity = '0';
+    setTimeout(() => { s.style.display = 'none'; document.getElementById('app').classList.add('visible'); }, 500);
+  }
+
+  // ── NAV ──
+  function goPage(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-'+id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // ── PILLS ──
+  function setPill(el, p) {
+    document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    platform = p;
+    const map = {
+      'LinkedIn': ['Risque GPSR Amazon','ROI vs consultant','Analogie RGPD 2018','3 erreurs conformité','Chiffres choc'],
+      'Email': ['Séquence nurturing','Relance prospect froid','Newsletter mensuelle','Offre lancement'],
+      'Instagram': ['Carousel témoignage','Before/After','Stat choc visuelle','Coulisses produit'],
+      'X': ['Thread GPSR 5 tweets','Stat percutante','Opinion directe'],
+      'Plan marketing': ['Plan complet mars','Stratégie Q2','Calendrier éditorial']
+    };
+    document.getElementById('chipRow').innerHTML = (map[p]||map['LinkedIn']).map(c=>`<div class="chip" onclick="useChip(this)">${c}</div>`).join('');
+  }
+
+  // ── CHIPS ──
+  function useChip(el) {
+    const map = {
+      'Risque GPSR Amazon': 'Génère 3 posts LinkedIn sur le risque GPSR pour les vendeurs Amazon. Analogie RGPD 2018. Chiffres : 79€, 48h, 4% CA mondial, 5-20K€/jour si listings suspendus.',
+      'ROI vs consultant': 'Post LinkedIn comparant Smartregs vs consultant traditionnel : 79€ vs 500€, 48h vs 3 semaines. Structure en 3 points. Ton direct.',
+      'Analogie RGPD 2018': 'Post LinkedIn ouvrant sur l\'analogie RGPD 2018 pour créer l\'urgence GPSR. Structure : analogie → chiffres → solution Smartregs → question engagement.',
+      '3 erreurs conformité': 'Post LinkedIn "Les 3 erreurs que font les vendeurs Amazon sur la conformité GPSR". Avec conséquences chiffrées pour chaque erreur.',
+      'Séquence nurturing': 'Séquence de 4 emails (J+1, J+3, J+7, J+14) pour un visiteur Smartregs.io qui n\'a pas encore souscrit. Objectif : déclencher l\'essai gratuit.',
+      'Relance prospect froid': 'Email de relance pour prospect silencieux depuis 2 semaines. Court, direct, ton humain. Pas agressif.',
+      'Carousel témoignage': 'Contenu Instagram carousel 3 slides sur témoignage client Smartregs. Slide 1 accroche, Slide 2 citation client avec chiffres, Slide 3 résultats + CTA.',
+      'Thread GPSR 5 tweets': 'Thread X de 5 tweets sur le risque GPSR Amazon. Tweet 1 = stat choc. Tweets 2-4 = développement. Tweet 5 = CTA Smartregs.',
+      'Plan complet mars': 'Plan marketing mars pour Smartregs. Objectif : 10 leads qualifiés. Budget 300€. Canaux : LinkedIn organique + email. Semaine par semaine avec actions concrètes.',
+    };
+    document.getElementById('prompt').value = map[el.textContent] || `Génère du contenu ${platform} sur "${el.textContent}" pour Smartregs.`;
+    document.getElementById('prompt').focus();
+    updateCC();
+  }
+
+  // ── CHAR COUNT ──
+  document.addEventListener('DOMContentLoaded', () => {
+    const ta = document.getElementById('prompt');
+    ta.addEventListener('input', updateCC);
+    ta.addEventListener('keydown', e => { if ((e.metaKey||e.ctrlKey) && e.key==='Enter') generate(); });
+  });
+
+  function updateCC() {
+    document.getElementById('cc').textContent = document.getElementById('prompt').value.length + ' caractères';
+  }
+
+  // ── MARKDOWN RENDERER ──
+  function renderMarkdown(text) {
+    // Detect slide structure (SLIDE 1, SLIDE 2, etc.)
+    if (text.match(/\*\*SLIDE\s*\d/i) || text.match(/SLIDE\s*\d+\s*[–-]/i)) {
+      return renderSlides(text);
+    }
+
+    let html = text
+      // Escape HTML
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      // Headers
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      // Bold + italic
+      .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // HR
+      .replace(/^---+$/gm, '<hr>')
+      // Blockquote
+      .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
+      // Bullet lists
+      .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+      // Numbered lists
+      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+      // Arrow lists (→)
+      .replace(/^→ (.+)$/gm, '<li style="list-style:none;padding-left:0">→ $1</li>')
+      // Double newline = paragraph
+      .replace(/\n\n/g, '</p><p>')
+      // Single newline = br
+      .replace(/\n/g, '<br>');
+
+    return '<p>' + html + '</p>';
+  }
+
+  function renderSlides(text) {
+    // Split by slide markers
+    const parts = text.split(/\*?\*?SLIDE\s*(\d+)[^*\n]*\*?\*?/i);
+    let html = '';
+    let slideNum = 0;
+
+    const lines = text.split('\n');
+    let currentSlide = null;
+    let slides = [];
+    let intro = [];
+
+    for (let line of lines) {
+      const slideMatch = line.match(/\*?\*?(?:SLIDE|Slide)\s*(\d+)[^*\n]*/i);
+      if (slideMatch) {
+        if (currentSlide) slides.push(currentSlide);
+        currentSlide = { num: slideMatch[1], lines: [] };
+      } else if (currentSlide) {
+        currentSlide.lines.push(line);
+      } else {
+        intro.push(line);
+      }
+    }
+    if (currentSlide) slides.push(currentSlide);
+
+    if (intro.filter(l => l.trim()).length > 0) {
+      html += '<p style="margin-bottom:16px;color:var(--text2);font-size:13px">' + renderLine(intro.join(' ')) + '</p>';
+    }
+
+    slides.forEach(slide => {
+      const content = slide.lines.join('\n').trim();
+      html += `<div class="slide-card">
+        <div class="slide-num">Slide ${slide.num}</div>
+        ${renderMarkdown(content).replace(/<p><\/p>/g,'')}
+      </div>`;
+    });
+
+    return html || renderMarkdown(text);
+  }
+
+  function renderLine(text) {
+    return text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>');
+  }
+
+  // ── GENERATE ──
+  async function generate() {
+    const prompt = document.getElementById('prompt').value.trim();
+    if (!prompt) { showToast('Écris ta demande d\'abord'); return; }
+
+    const btn = document.getElementById('genBtn');
+    const loading = document.getElementById('loading');
+    const output = document.getElementById('output');
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spin" style="width:14px;height:14px;border-width:2px;border-color:rgba(255,255,255,0.3);border-top-color:white"></div>';
+    loading.classList.add('on');
+    output.classList.remove('on');
+
+    const system = `Tu es le CMO de Smartregs. SaaS conformité GPSR pour vendeurs Amazon Europe. Rapport GPSR en 48h à 79€/produit vs 500€ consultant. Cible : CEO/Directeur E-commerce PME 50-200 SKUs Amazon. 
+
+TON : Direct, pragmatique, accessible — style Stripe. Phrases courtes. Chiffres concrets toujours.
+
+FORMAT MARKDOWN OBLIGATOIRE :
+- Utilise ## pour les titres de sections
+- Utilise **texte** pour les éléments importants
+- Utilise --- pour séparer les posts
+- Pour les slides Instagram : commence chaque slide par "**SLIDE 1 — TITRE**"
+- Pour les emails : utilise **Objet :** en première ligne
+- Pour les plans : utilise ### Semaine 1, ### Semaine 2 etc.
+- Utilise → pour les listes à puces
+- Sépare chaque post/email par ---
+
+CONTRAINTES LÉGALES : JAMAIS "garantit conformité" → "pré-diagnostic". JAMAIS "certifie" → "analyse préliminaire". TOUJOURS recommander validation expert.
+
+ARGUMENTS : 79€ vs 500€, 48h vs 3 semaines, 2h/mois vs 40h, amendes 4% CA, listings suspendus 5-20K€/jour, analogie RGPD 2018.
+
+Plateforme demandée : ${platform}`;
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1200,
+          system,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await res.json();
+      rawText = data.content?.[0]?.text || 'Erreur de génération.';
+
+      document.getElementById('rendered').innerHTML = renderMarkdown(rawText);
+      output.classList.add('on');
+      addToHist(prompt.substring(0,50)+'...', platform);
+
+    } catch(e) {
+      document.getElementById('rendered').innerHTML = '<p style="color:#D93025">⚠️ Erreur de connexion. Vérifie ta clé API et réessaie.</p>';
+      output.classList.add('on');
+    }
+
+    loading.classList.remove('on');
+    btn.disabled = false;
+    btn.innerHTML = '<span>Générer</span><span>→</span>';
+  }
+
+  // ── HISTORY ──
+  function addToHist(title, plat) {
+    const icons = { LinkedIn:'𝓛', Email:'✉', Instagram:'◎', X:'✕', 'Plan marketing':'◈' };
+    const badges = { LinkedIn:'b-li', Email:'b-em', 'Plan marketing':'b-pl' };
+    histCount++;
+    document.getElementById('histCount').textContent = histCount;
+    const card = document.createElement('div');
+    card.className = 'hist-card';
+    card.innerHTML = `
+      <div class="hist-ico">${icons[plat]||'✦'}</div>
+      <div class="hist-info">
+        <div class="hist-title">${title}</div>
+        <div class="hist-meta">À l'instant · ${plat}</div>
+      </div>
+      <span class="hist-badge ${badges[plat]||'b-li'}">${plat}</span>`;
+    document.getElementById('histList').insertBefore(card, document.getElementById('histList').firstChild);
+  }
+
+  // ── UTILS ──
+  function copyOut() {
+    navigator.clipboard.writeText(rawText).then(() => showToast('Copié dans le presse-papier ✓'));
+  }
+
+  function saveOut() {
+    addToHist(document.getElementById('prompt').value.substring(0,50)+'...', platform);
+    showToast('Sauvegardé dans l\'historique ✓');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
